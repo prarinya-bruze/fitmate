@@ -2543,6 +2543,7 @@ function renderSettingsCategory(cat, items) {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div class="settings-section-title">${catIcons[cat]||'⚙'} การตั้งค่า</div>
         ${cat === 'notification' ? `<button class="btn btn-secondary btn-sm" onclick="testLine()">📱 ทดสอบ LINE</button>` : ''}
+        ${cat === 'ai' ? `<button class="btn btn-secondary btn-sm" onclick="testAi()">🤖 ทดสอบ AI</button>` : ''}
       </div>
       ${cat === 'ai' ? '<div id="ai-providers-container"></div>' : ''}
       ${items.map(item => renderSettingItem(item)).join('')}
