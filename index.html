@@ -989,6 +989,7 @@ function saveApiUrl() {
   document.getElementById('api-banner').classList.add('hidden');
   closeModal();
   toast('บันทึก API URL เรียบร้อย ✅', 'success');
+  if (!state.token && document.getElementById('auth-page').style.display !== 'none') { renderLoginForm(); }
 }
 
 // ============================================================
@@ -1037,8 +1038,9 @@ function renderNav() {
         ${i.id==='notifications' && state.notiCount>0 ? `<span class="nav-badge">${state.notiCount}</span>` : ''}
       </button>
     `).join('')}
+    ${isAdmin ? `
     <div style="margin-top:16px">
-      <div class="sidebar-section-label">Quả</div>
+      <div class="sidebar-section-label">การตั้งค่าระบบ</div>
       <button class="nav-item" onclick="promptApiUrl()">
         <span class="nav-icon">🔗</span><span>ตั้งค่า API URL</span>
       </button>
@@ -1047,6 +1049,7 @@ function renderNav() {
         <span id="ai-status-indicator" style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)">กำลังเช็ค...</span>
       </div>
     </div>
+    ` : ''}
   `;
 
   botNav.innerHTML = mobileItems.map(i => `
@@ -1134,6 +1137,8 @@ function showApp() {
 
 function renderLoginForm() {
   document.getElementById('auth-card-inner').innerHTML = `
+    <button onclick="promptApiUrl()" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:20px;opacity:0.5;transition:0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5" title="ตั้งค่า API URL">⚙️</button>
+    ${!API_URL ? `<div style="background:var(--danger-alpha);color:var(--danger);padding:12px;border-radius:var(--radius-sm);margin-bottom:16px;text-align:center;font-size:14px;border:1px solid var(--danger)">⚠️ ไม่มี API URL กรุณาตั้งค่าก่อน</div>` : ''}
     <div class="auth-logo">
       <div class="auth-logo-icon">🏋️</div>
       <div class="auth-logo-name">FITMATE</div>
@@ -2021,7 +2026,7 @@ async function renderPlanReview(el) {
               <span class="badge badge-${p.status==='active'?'success':p.status==='draft'?'warning':'gray'}">
                 ${{active:'✅ Active',draft:'📝 Draft',completed:'🏁 เสร็จสิ้น',approved:'👍 อนุมัติ'}[p.status]||p.status}
               </span>
-              <button class="btn btn-secondary btn-sm" onclick="viewPlan('${p.planId}')">📋 ดูแผน</button>
+              <button class="btn btn-secondary btn-sm" onclick="viewPlan('${p.planId}', this)">📋 ดูแผน</button>
               ${p.status==='draft' ? `<button class="btn btn-primary btn-sm" onclick="approveMyPlan('${p.planId}')">✅ เริ่มใช้แผนนี้</button>` : ''}
               <button class="btn btn-danger btn-sm" onclick="deletePlan('${p.planId}')">🗑</button>
             </div>
@@ -2033,12 +2038,15 @@ async function renderPlanReview(el) {
   `;
 }
 
-window.viewPlan = async (planId) => {
-  const r = await apiGet('getPlanDetail', { planId });
-  const plan = r.data;
-  if (!plan) { toast('ไม่พบแผน', 'error'); return; }
+window.viewPlan = async (planId, btn) => {
+  const oldText = btn ? btn.textContent : '📋 ดูแผน';
+  if (btn) { btn.textContent = '⏳ กำลังโหลด...'; btn.disabled = true; }
+  try {
+    const r = await apiGet('getPlanDetail', { planId });
+    const plan = r.data;
+    if (!plan) { toast('ไม่พบแผน', 'error'); return; }
 
-  const el = document.getElementById('plan-detail-view');
+    const el = document.getElementById('plan-detail-view');
   el.innerHTML = `
     <div class="card" style="margin-top:20px">
       <div class="card-header">
@@ -2080,6 +2088,12 @@ window.viewPlan = async (planId) => {
       `).join('')}
     </div>
   `;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) {
+    toast(e.message, 'error');
+  } finally {
+    if (btn) { btn.textContent = oldText; btn.disabled = false; }
+  }
 };
 
 window.approveMyPlan = async (planId) => {
