@@ -1,0 +1,2787 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="midnight-onyx">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="FITMATE — AI Personal Trainer เพื่อนคู่ฟิตของคุณ ฉลาดขึ้นทุกวัน" />
+<title>FITMATE — AI Personal Trainer</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+   CSS VARIABLES — 10 Themes
+   ============================================================ */
+:root,[data-theme="midnight-onyx"]{
+  --bg:#0a0a0f;--surface:#141420;--surface2:#1e1e30;--surface3:#252540;
+  --text:#f0f0ff;--text2:#a0a0c0;--text3:#606080;
+  --accent:#c9a84c;--accent2:#e8c84c;--accent-rgb:201,168,76;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --shadow:0 4px 24px rgba(0,0,0,0.5);--shadow2:0 8px 40px rgba(0,0,0,0.7);
+  --done:#4ade80;--partial:#fbbf24;--missed:#f87171;
+  --glass:rgba(20,20,32,0.85);--blur:blur(20px);
+  --radius:16px;--radius-sm:10px;--radius-lg:24px;
+}
+[data-theme="rose-quartz"]{
+  --bg:#fdf0f3;--surface:#fff;--surface2:#fce8ee;--surface3:#f5d6e0;
+  --text:#3a1e28;--text2:#7a4a5a;--text3:#b07a8a;
+  --accent:#e8668a;--accent2:#f088aa;--accent-rgb:232,102,138;
+  --border:rgba(232,102,138,0.15);--border2:rgba(232,102,138,0.3);
+  --shadow:0 4px 24px rgba(232,102,138,0.15);--shadow2:0 8px 40px rgba(232,102,138,0.2);
+  --glass:rgba(255,240,243,0.9);
+}
+[data-theme="emerald-executive"]{
+  --bg:#071510;--surface:#0f2318;--surface2:#163020;--surface3:#1e4028;
+  --text:#e8f5e8;--text2:#90b890;--text3:#507050;
+  --accent:#c9a84c;--accent2:#e8c84c;--accent-rgb:201,168,76;
+  --border:rgba(255,255,255,0.08);--border2:rgba(201,168,76,0.2);
+  --shadow:0 4px 24px rgba(0,0,0,0.6);--shadow2:0 8px 40px rgba(0,0,0,0.8);
+  --glass:rgba(7,21,16,0.9);
+}
+[data-theme="ocean-glass"]{
+  --bg:linear-gradient(135deg,#0d2137 0%,#0a3355 100%);--surface:rgba(255,255,255,0.07);--surface2:rgba(255,255,255,0.12);--surface3:rgba(255,255,255,0.18);
+  --text:#e0f4ff;--text2:#90c8e8;--text3:#5090b0;
+  --accent:#4dd9e8;--accent2:#80eeff;--accent-rgb:77,217,232;
+  --border:rgba(255,255,255,0.12);--border2:rgba(77,217,232,0.3);
+  --shadow:0 4px 24px rgba(0,0,0,0.4);--shadow2:0 8px 40px rgba(0,0,0,0.6);
+  --glass:rgba(13,33,55,0.7);--blur:blur(24px);
+}
+[data-theme="sand-stone"]{
+  --bg:#f5f0e8;--surface:#ffffff;--surface2:#ede8e0;--surface3:#e0d8cc;
+  --text:#3a3028;--text2:#7a6858;--text3:#b0a090;
+  --accent:#b59a78;--accent2:#d0b890;--accent-rgb:181,154,120;
+  --border:rgba(181,154,120,0.2);--border2:rgba(181,154,120,0.35);
+  --shadow:0 4px 24px rgba(181,154,120,0.15);--shadow2:0 8px 40px rgba(0,0,0,0.1);
+  --glass:rgba(245,240,232,0.9);
+}
+[data-theme="royal-violet"]{
+  --bg:#0d0818;--surface:#180f2a;--surface2:#22163a;--surface3:#2c1e4a;
+  --text:#f0eaff;--text2:#c0a8e8;--text3:#8060b0;
+  --accent:#c0c0d8;--accent2:#e0d8ff;--accent-rgb:192,192,216;
+  --border:rgba(255,255,255,0.08);--border2:rgba(192,192,216,0.2);
+  --shadow:0 4px 24px rgba(0,0,0,0.6);--shadow2:0 8px 40px rgba(0,0,0,0.8);
+  --glass:rgba(13,8,24,0.9);
+}
+[data-theme="sunset-coral"]{
+  --bg:#120808;--surface:#201010;--surface2:#2c1818;--surface3:#381e1e;
+  --text:#fff0ee;--text2:#f0c0b8;--text3:#c07068;
+  --accent:#ff7b54;--accent2:#ff9d7e;--accent-rgb:255,123,84;
+  --border:rgba(255,123,84,0.15);--border2:rgba(255,123,84,0.3);
+  --shadow:0 4px 24px rgba(255,123,84,0.2);--shadow2:0 8px 40px rgba(0,0,0,0.7);
+  --glass:rgba(18,8,8,0.9);
+}
+[data-theme="pure-mono"]{
+  --bg:#f8f8f8;--surface:#ffffff;--surface2:#f0f0f0;--surface3:#e8e8e8;
+  --text:#111111;--text2:#555555;--text3:#999999;
+  --accent:#111111;--accent2:#444444;--accent-rgb:17,17,17;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.2);
+  --shadow:0 4px 24px rgba(0,0,0,0.08);--shadow2:0 8px 40px rgba(0,0,0,0.12);
+  --glass:rgba(248,248,248,0.95);
+}
+[data-theme="lavender-mist"]{
+  --bg:#f0eef8;--surface:#ffffff;--surface2:#ebe8f5;--surface3:#e0dbf0;
+  --text:#2a2440;--text2:#6a60a0;--text3:#a098d0;
+  --accent:#9b8ec4;--accent2:#c0b0e8;--accent-rgb:155,142,196;
+  --border:rgba(155,142,196,0.2);--border2:rgba(155,142,196,0.35);
+  --shadow:0 4px 24px rgba(155,142,196,0.15);--shadow2:0 8px 40px rgba(155,142,196,0.2);
+  --glass:rgba(240,238,248,0.9);
+}
+[data-theme="graphite-neon"]{
+  --bg:#101014;--surface:#18181e;--surface2:#202028;--surface3:#282830;
+  --text:#e8e8f0;--text2:#90909c;--text3:#505058;
+  --accent:#00f5d4;--accent2:#40ffee;--accent-rgb:0,245,212;
+  --border:rgba(0,245,212,0.1);--border2:rgba(0,245,212,0.25);
+  --shadow:0 4px 24px rgba(0,245,212,0.1);--shadow2:0 8px 40px rgba(0,0,0,0.8);
+  --glass:rgba(16,16,20,0.9);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:'Prompt','Noto Sans Thai',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+a{color:var(--accent);text-decoration:none}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#app{display:flex;min-height:100vh}
+
+/* Sidebar (desktop) */
+#sidebar{
+  width:240px;min-height:100vh;background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;z-index:100;
+  transition:transform .3s ease;
+}
+.sidebar-logo{
+  padding:24px 20px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);
+}
+.sidebar-logo-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.sidebar-logo-text{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.sidebar-logo-sub{font-size:10px;color:var(--text3);font-weight:400}
+
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.sidebar-section-label{
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  color:var(--text3);padding:8px 8px 4px;text-transform:uppercase;
+}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 12px;border-radius:var(--radius-sm);
+  color:var(--text2);font-size:14px;font-weight:500;
+  cursor:pointer;transition:all .2s;margin-bottom:2px;
+  border:none;background:transparent;width:100%;text-align:left;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(var(--accent-rgb),.15);color:var(--accent);font-weight:600}
+.nav-item .nav-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;background:var(--accent);color:#000;
+  font-size:10px;font-weight:700;padding:2px 6px;border-radius:9999px;
+}
+.sidebar-footer{
+  padding:16px;border-top:1px solid var(--border);
+}
+.user-card{
+  display:flex;align-items:center;gap:10px;
+  padding:10px;border-radius:var(--radius-sm);
+  background:var(--surface2);cursor:pointer;
+}
+.user-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:#000;flex-shrink:0;
+}
+.user-info-name{font-size:13px;font-weight:600;line-height:1.3}
+.user-info-role{font-size:11px;color:var(--text3)}
+
+/* Main content */
+#main{
+  margin-left:240px;flex:1;
+  display:flex;flex-direction:column;min-height:100vh;
+}
+#page-content{flex:1;padding:28px 32px;max-width:1400px;width:100%}
+
+/* Bottom nav (mobile) */
+#bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--glass);backdrop-filter:var(--blur);
+  border-top:1px solid var(--border);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.bottom-nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 12px;border-radius:var(--radius-sm);
+  color:var(--text3);font-size:10px;font-weight:500;
+  cursor:pointer;transition:all .2s;border:none;background:transparent;
+  position:relative;
+}
+.bottom-nav-item:hover,.bottom-nav-item.active{color:var(--accent)}
+.bottom-nav-item.active::before{
+  content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  width:32px;height:3px;background:var(--accent);border-radius:0 0 3px 3px;
+}
+.bottom-nav-icon{font-size:22px}
+.bottom-nav-badge{
+  position:absolute;top:4px;right:8px;
+  background:var(--done);color:#000;font-size:9px;font-weight:700;
+  padding:1px 5px;border-radius:9999px;min-width:16px;text-align:center;
+}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+#top-bar{
+  background:var(--glass);backdrop-filter:var(--blur);
+  border-bottom:1px solid var(--border);
+  padding:16px 32px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50;
+}
+.top-bar-title{font-size:20px;font-weight:700}
+.top-bar-actions{display:flex;align-items:center;gap:12px}
+.top-bar-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;transition:all .2s;position:relative;
+}
+.top-bar-btn:hover{background:var(--surface3);border-color:var(--border2)}
+
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+
+/* Cards */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  transition:all .25s;
+}
+.card:hover{border-color:var(--border2)}
+.card-sm{padding:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.card-title-icon{font-size:20px}
+
+/* Glass card */
+.glass-card{
+  background:var(--glass);backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:var(--radius);
+}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;text-align:center;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent);
+}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--border2);box-shadow:var(--shadow)}
+.stat-value{font-size:32px;font-weight:800;color:var(--accent);line-height:1;margin-bottom:4px}
+.stat-label{font-size:13px;color:var(--text2);font-weight:500}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 20px;border-radius:var(--radius-sm);
+  font-size:14px;font-weight:600;border:none;
+  transition:all .2s;cursor:pointer;white-space:nowrap;
+  font-family:inherit;
+}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 16px rgba(var(--accent-rgb),.4)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface3);border-color:var(--border2)}
+.btn-danger{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.btn-danger:hover{background:rgba(248,113,113,.25)}
+.btn-success{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.btn-success:hover{background:rgba(74,222,128,.25)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-lg{padding:14px 28px;font-size:15px;border-radius:var(--radius)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:50%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* Forms */
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px}
+.form-label.required::after{content:' *';color:var(--missed)}
+.form-control{
+  width:100%;padding:11px 14px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-size:14px;
+  transition:all .2s;outline:none;font-family:inherit;
+}
+.form-control:focus{border-color:var(--accent);background:var(--surface3);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.1)}
+.form-control::placeholder{color:var(--text3)}
+select.form-control option{background:var(--surface);color:var(--text)}
+.form-hint{font-size:12px;color:var(--text3);margin-top:6px}
+.form-error{font-size:12px;color:var(--missed);margin-top:6px}
+
+/* Password field with toggle */
+.input-group{position:relative}
+.input-group .form-control{padding-right:44px}
+.input-group-append{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;
+  padding:4px;
+}
+.input-group-append:hover{color:var(--text)}
+
+/* Toggle switch */
+.toggle-wrap{display:flex;align-items:center;gap:12px}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{
+  position:absolute;inset:0;background:var(--surface3);
+  border-radius:12px;cursor:pointer;transition:.3s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;height:18px;width:18px;
+  left:3px;bottom:3px;background:var(--text3);
+  border-radius:50%;transition:.3s;
+}
+.toggle input:checked + .toggle-slider{background:var(--accent)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(20px);background:#000}
+.toggle-label{font-size:14px;font-weight:500}
+
+/* Badges */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:9999px;font-size:12px;font-weight:600;
+}
+.badge-success{background:rgba(74,222,128,.15);color:var(--done)}
+.badge-warning{background:rgba(251,191,36,.15);color:var(--partial)}
+.badge-danger{background:rgba(248,113,113,.15);color:var(--missed)}
+.badge-info{background:rgba(var(--accent-rgb),.15);color:var(--accent)}
+.badge-gray{background:var(--surface2);color:var(--text2)}
+
+/* Progress ring */
+.ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-text{position:absolute;text-align:center;line-height:1.2}
+.ring-pct{font-size:22px;font-weight:800;color:var(--accent)}
+.ring-sub{font-size:11px;color:var(--text3)}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.tab-btn{
+  padding:10px 18px;font-size:13px;font-weight:600;
+  border:none;background:transparent;color:var(--text2);
+  cursor:pointer;border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+  border-bottom:2px solid transparent;transition:all .2s;font-family:inherit;
+  margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--text);background:var(--surface2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--surface2)}
+th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.5px;white-space:nowrap}
+td{padding:13px 16px;font-size:14px;border-top:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:var(--surface2)}
+
+/* Toast */
+#toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{
+  min-width:280px;max-width:380px;padding:14px 18px;border-radius:var(--radius-sm);
+  font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;
+  backdrop-filter:var(--blur);box-shadow:var(--shadow2);
+  animation:slideInRight .3s ease;pointer-events:all;
+}
+.toast-success{background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:var(--done)}
+.toast-error{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:var(--missed)}
+.toast-info{background:var(--glass);border:1px solid var(--border2);color:var(--text)}
+.toast-icon{font-size:18px;flex-shrink:0}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* Modal */
+#modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:20px;
+}
+#modal-overlay.show{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;animation:fadeScaleIn .25s ease;
+}
+.modal-header{
+  padding:24px 24px 0;display:flex;
+  align-items:center;justify-content:space-between;margin-bottom:20px;
+}
+.modal-title{font-size:18px;font-weight:700}
+.modal-close{background:transparent;border:none;font-size:20px;color:var(--text3);cursor:pointer}
+.modal-body{padding:0 24px 24px}
+@keyframes fadeScaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+
+/* Loader */
+.loader{display:flex;align-items:center;justify-content:center;gap:8px;padding:40px}
+.spinner{
+  width:28px;height:28px;border:3px solid var(--surface3);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Empty state */
+.empty-state{text-align:center;padding:60px 24px;color:var(--text3)}
+.empty-state-icon{font-size:48px;margin-bottom:16px;display:block}
+.empty-state h3{font-size:18px;font-weight:600;color:var(--text2);margin-bottom:8px}
+.empty-state p{font-size:14px}
+
+/* ============================================================
+   PAGE: AUTH
+   ============================================================ */
+#auth-page{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;position:relative;overflow:hidden;
+}
+.auth-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 50%, rgba(var(--accent-rgb),.08) 0%, transparent 60%),
+             radial-gradient(ellipse at 80% 20%, rgba(var(--accent-rgb),.05) 0%, transparent 50%);
+}
+.auth-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);animation:float 6s ease-in-out infinite;
+}
+.auth-orb-1{width:300px;height:300px;background:rgba(var(--accent-rgb),.06);top:-100px;left:-80px}
+.auth-orb-2{width:200px;height:200px;background:rgba(var(--accent-rgb),.04);bottom:-50px;right:-60px;animation-delay:-3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.auth-card{
+  background:var(--glass);backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:40px;width:100%;max-width:420px;position:relative;z-index:1;
+  animation:fadeScaleIn .4s ease;
+}
+.auth-logo{text-align:center;margin-bottom:32px}
+.auth-logo-icon{
+  width:64px;height:64px;border-radius:20px;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 12px;
+}
+.auth-logo-name{font-size:28px;font-weight:800;letter-spacing:-1px}
+.auth-logo-tagline{font-size:13px;color:var(--text2)}
+
+/* ============================================================
+   PAGE: DASHBOARD
+   ============================================================ */
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dashboard-grid .full{grid-column:1/-1}
+.chart-container{position:relative;height:260px}
+.chart-container-sm{position:relative;height:200px}
+
+/* Heatmap calendar */
+.heatmap-wrap{overflow-x:auto;padding-bottom:8px}
+.heatmap-grid{display:flex;gap:3px}
+.heatmap-col{display:flex;flex-direction:column;gap:3px}
+.heatmap-cell{
+  width:12px;height:12px;border-radius:2px;
+  background:var(--surface3);cursor:pointer;transition:.15s;flex-shrink:0;
+}
+.heatmap-cell:hover{opacity:.8;transform:scale(1.3)}
+.heatmap-cell.done{background:var(--done)}
+.heatmap-cell.partial{background:var(--partial)}
+.heatmap-cell.missed{background:var(--missed)}
+.heatmap-labels{display:flex;gap:3px;margin-bottom:4px;padding-left:0}
+.heatmap-month{font-size:10px;color:var(--text3);flex:1;min-width:0}
+
+/* Silhouette */
+.silhouette-wrap{position:relative;display:flex;justify-content:center}
+.silhouette-wrap svg{max-height:200px}
+
+/* Progress ring multi-layer */
+.rings-container{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
+.ring-item{text-align:center}
+.ring-item-label{font-size:12px;color:var(--text2);margin-top:8px;font-weight:500}
+
+/* Gauge */
+.gauge-container{position:relative;display:flex;justify-content:center}
+
+/* ============================================================
+   PAGE: ACTIVITY
+   ============================================================ */
+.exercise-list{display:flex;flex-direction:column;gap:12px}
+.exercise-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 20px;
+  display:flex;align-items:center;gap:16px;
+  transition:all .25s;cursor:pointer;
+}
+.exercise-card.completed{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)}
+.exercise-card:hover{border-color:var(--border2);transform:translateX(4px)}
+.exercise-check{
+  width:24px;height:24px;border-radius:50%;border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;
+}
+.exercise-card.completed .exercise-check{background:var(--done);border-color:var(--done)}
+.exercise-name{font-size:15px;font-weight:600;flex:1}
+.exercise-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.exercise-badges{margin-left:auto;display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+
+/* Rest timer */
+.rest-timer{
+  text-align:center;padding:28px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+}
+.timer-ring{position:relative;width:160px;height:160px;margin:0 auto 20px}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-text{
+  position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;
+}
+.timer-seconds{font-size:48px;font-weight:800;color:var(--accent);line-height:1}
+.timer-label{font-size:12px;color:var(--text3)}
+
+/* Upload zone */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:var(--radius-lg);
+  padding:48px 24px;text-align:center;
+  cursor:pointer;transition:all .3s;
+  background:var(--surface);
+}
+.upload-zone:hover,.upload-zone.dragover{
+  border-color:var(--accent);
+  background:rgba(var(--accent-rgb),.05);
+}
+.upload-icon{font-size:48px;margin-bottom:16px;display:block}
+.upload-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.upload-sub{font-size:14px;color:var(--text2)}
+
+/* Plan editor */
+.plan-day-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:12px;overflow:hidden;
+}
+.plan-day-header{
+  padding:14px 20px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;background:var(--surface2);transition:.2s;
+}
+.plan-day-header:hover{background:var(--surface3)}
+.plan-day-index{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--accent);color:#000;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.plan-day-body{padding:16px 20px;display:none}
+.plan-day-body.open{display:block}
+
+/* AI Analysis Result */
+.ai-result{
+  background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.2);
+  border-radius:var(--radius);padding:20px;margin-top:16px;
+}
+.ai-result-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:600}
+
+/* Settings form */
+.settings-section{margin-bottom:32px}
+.settings-section-title{
+  font-size:18px;font-weight:700;padding-bottom:12px;
+  border-bottom:1px solid var(--border);margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.setting-item{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:16px 0;border-bottom:1px solid var(--border);gap:20px;
+}
+.setting-item:last-child{border-bottom:none}
+.setting-info{flex:1;min-width:0}
+.setting-label{font-size:14px;font-weight:600;margin-bottom:4px}
+.setting-desc{font-size:12px;color:var(--text3);line-height:1.5}
+.setting-control{min-width:160px;text-align:right}
+
+/* Notifications */
+.noti-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:16px;border-radius:var(--radius-sm);
+  border-left:3px solid transparent;margin-bottom:8px;
+  background:var(--surface);transition:.2s;
+}
+.noti-item.unread{border-left-color:var(--accent);background:rgba(var(--accent-rgb),.05)}
+.noti-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px}
+.noti-content{flex:1;min-width:0}
+.noti-message{font-size:14px;font-weight:500;margin-bottom:4px}
+.noti-time{font-size:12px;color:var(--text3)}
+
+/* Admin user table */
+.user-row-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);display:inline-flex;
+  align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:#000;
+}
+
+/* Leaderboard */
+.leaderboard-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-radius:var(--radius-sm);
+  background:var(--surface2);margin-bottom:8px;
+}
+.leaderboard-rank{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surface3);display:flex;align-items:center;
+  justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;
+}
+.leaderboard-rank.gold{background:var(--accent);color:#000}
+.leaderboard-rank.silver{background:#c0c0c0;color:#000}
+.leaderboard-rank.bronze{background:#cd7f32;color:#fff}
+
+/* Body metrics */
+.metric-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+
+/* Chat coach */
+.chat-wrap{display:flex;flex-direction:column;height:400px}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chat-bubble{
+  max-width:75%;padding:10px 14px;border-radius:var(--radius);
+  font-size:14px;line-height:1.5;
+}
+.chat-bubble.user{
+  align-self:flex-end;background:var(--accent);color:#000;
+  border-radius:var(--radius) var(--radius) 0 var(--radius);
+}
+.chat-bubble.ai{
+  align-self:flex-start;background:var(--surface2);
+  border-radius:var(--radius) var(--radius) var(--radius) 0;
+}
+.chat-input-wrap{
+  display:flex;gap:8px;padding:12px;
+  border-top:1px solid var(--border);
+}
+.chat-input-wrap .form-control{border-radius:9999px}
+
+/* Profile */
+.profile-header{
+  display:flex;align-items:center;gap:20px;margin-bottom:28px;
+}
+.profile-avatar-big{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;
+  justify-content:center;font-size:28px;font-weight:700;color:#000;
+  flex-shrink:0;border:3px solid var(--border2);
+}
+
+/* Theme picker */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;margin-top:16px}
+.theme-option{
+  border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;
+  border:2px solid transparent;transition:all .2s;
+}
+.theme-option.selected{border-color:var(--accent)}
+.theme-preview{height:48px;position:relative}
+.theme-preview-bar{height:6px;position:absolute;bottom:0;left:0;right:0}
+.theme-name{font-size:11px;font-weight:600;padding:6px 8px;text-align:center;background:var(--surface2)}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+.page-enter{animation:pageEnter .3s ease}
+@keyframes pageEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0}
+  #page-content{padding:16px;padding-bottom:90px}
+  #top-bar{padding:12px 16px}
+  #bottom-nav{display:block}
+  .dashboard-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .setting-item{flex-direction:column;gap:12px}
+  .setting-control{text-align:left;min-width:unset;width:100%}
+  .metric-row{grid-template-columns:1fr 1fr}
+  .auth-card{padding:28px 20px}
+  .modal{max-width:100%;margin:0;max-height:100vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;align-self:flex-end}
+  #modal-overlay{align-items:flex-end;padding:0}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr}
+  .theme-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+}
+
+/* API Setup Banner */
+#api-banner{
+  background:rgba(251,191,36,.1);border-bottom:1px solid rgba(251,191,36,.3);
+  padding:10px 24px;display:flex;align-items:center;gap:12px;
+  font-size:13px;font-weight:500;
+}
+#api-banner.hidden{display:none}
+
+/* Skeleton loader */
+.skeleton{
+  background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-text{height:14px;margin-bottom:8px}
+.skeleton-title{height:24px;margin-bottom:12px;width:60%}
+.skeleton-card{height:120px;margin-bottom:12px}
+
+/* Streak flame */
+.streak-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(var(--accent-rgb),.15);
+  border:1px solid rgba(var(--accent-rgb),.3);
+  border-radius:9999px;padding:4px 12px;
+  font-weight:700;font-size:15px;color:var(--accent);
+}
+
+/* Section header */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-size:20px;font-weight:700}
+.section-subtitle{font-size:14px;color:var(--text2);margin-top:2px}
+</style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Modal Overlay -->
+<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- Auth Page -->
+<div id="auth-page" style="display:none">
+  <div class="auth-bg">
+    <div class="auth-orb auth-orb-1"></div>
+    <div class="auth-orb auth-orb-2"></div>
+  </div>
+  <div class="auth-card" id="auth-card-inner"></div>
+</div>
+
+<!-- Main App -->
+<div id="app" style="display:none">
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏋️</div>
+      <div>
+        <div class="sidebar-logo-text">FITMATE</div>
+        <div class="sidebar-logo-sub">AI Personal Trainer</div>
+      </div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav"></div>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="navigate('profile')">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div>
+          <div class="user-info-name" id="sidebar-name">—</div>
+          <div class="user-info-role" id="sidebar-role">—</div>
+        </div>
+        <span style="margin-left:auto;color:var(--text3);font-size:12px">⚙</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main area -->
+  <div id="main">
+    <!-- API Banner -->
+    <div id="api-banner" class="hidden">
+      ⚠️ ยังไม่ได้ตั้งค่า API URL —
+      <button class="btn btn-sm btn-primary" onclick="promptApiUrl()">ตั้งค่าเลย</button>
+    </div>
+    <!-- Top Bar -->
+    <div id="top-bar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="top-bar-btn" id="menu-toggle" onclick="toggleSidebar()" style="display:none">☰</button>
+        <div id="top-bar-title" class="top-bar-title">—</div>
+      </div>
+      <div class="top-bar-actions">
+        <button class="top-bar-btn" id="noti-btn" onclick="navigate('notifications')" title="การแจ้งเตือน">
+          🔔<span id="noti-badge" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--done);border-radius:50%"></span>
+        </button>
+        <button class="top-bar-btn" onclick="logout()" title="ออกจากระบบ">🚪</button>
+      </div>
+    </div>
+    <!-- Page Content -->
+    <div id="page-content" class="page-enter"></div>
+  </div>
+
+  <!-- Bottom Nav (Mobile) -->
+  <nav id="bottom-nav">
+    <div class="bottom-nav-inner" id="bottom-nav-inner"></div>
+  </nav>
+</div>
+
+<script>
+// ============================================================
+// CONFIG — แก้ไข API_URL หลัง deploy GAS Web App
+// ============================================================
+let API_URL = localStorage.getItem('fitmate_api_url') || '';
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  token:    localStorage.getItem('fitmate_token')  || '',
+  user:     JSON.parse(localStorage.getItem('fitmate_user') || 'null'),
+  page:     'dashboard',
+  settings: {},
+  notiCount:0,
+  charts:   {},
+  chatHistory: [],
+  restTimerInterval: null,
+};
+
+// ============================================================
+// API LAYER
+// ============================================================
+async function api(action, params={}, method='GET') {
+  if (!API_URL) { showApiSetup(); throw new Error('ไม่มี API URL'); }
+  let url, opts;
+  if (method === 'GET') {
+    const q = new URLSearchParams({ action, token: state.token, ...params });
+    url  = `${API_URL}?${q}`;
+    opts = {};
+  } else {
+    url  = API_URL;
+    opts = { method:'POST', body: JSON.stringify({ action, token: state.token, ...params }) };
+  }
+  const res = await fetch(url, opts);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function apiGet(action, params={})  { return api(action, params, 'GET'); }
+async function apiPost(action, params={}) { return api(action, params, 'POST'); }
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (!API_URL) {
+    document.getElementById('api-banner').classList.remove('hidden');
+  }
+  if (state.token && state.user) {
+    applyTheme(state.user.theme || 'midnight-onyx');
+    showApp();
+  } else {
+    showAuth();
+  }
+  // Mobile detection
+  if (window.innerWidth <= 768) {
+    document.getElementById('menu-toggle').style.display = 'flex';
+  }
+  window.addEventListener('resize', () => {
+    document.getElementById('menu-toggle').style.display = window.innerWidth<=768 ? 'flex' : 'none';
+  });
+});
+
+function showApiSetup() {
+  document.getElementById('api-banner').classList.remove('hidden');
+}
+
+function promptApiUrl() {
+  openModal(`
+    <div class="modal-header">
+      <div class="modal-title">⚙️ ตั้งค่า API URL</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text2);font-size:14px;margin-bottom:20px">
+        วาง URL ของ Google Apps Script Web App ที่ Deploy แล้ว<br>
+        <small style="color:var(--text3)">ตัวอย่าง: https://script.google.com/macros/s/AKf.../exec</small>
+      </p>
+      <div class="form-group">
+        <label class="form-label">Web App URL</label>
+        <input id="api-url-input" class="form-control" type="url"
+          placeholder="https://script.google.com/macros/s/.../exec"
+          value="${API_URL}" />
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">บันทึก</button>
+        <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
+      </div>
+    </div>
+  `);
+}
+
+function saveApiUrl() {
+  const v = document.getElementById('api-url-input')?.value?.trim();
+  if (!v) { toast('กรุณากรอก URL', 'error'); return; }
+  API_URL = v;
+  localStorage.setItem('fitmate_api_url', v);
+  document.getElementById('api-banner').classList.add('hidden');
+  closeModal();
+  toast('บันทึก API URL เรียบร้อย ✅', 'success');
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme || 'midnight-onyx');
+  localStorage.setItem('fitmate_theme', theme);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function getNavItems() {
+  const isAdmin = state.user?.role === 'admin';
+  const member = [
+    { id:'dashboard',    icon:'📊', label:'Dashboard' },
+    { id:'today',        icon:'⚡', label:'กิจกรรมวันนี้' },
+    { id:'upload',       icon:'📸', label:'อัปโหลดแผน' },
+    { id:'plan-review',  icon:'📋', label:'แผนของฉัน' },
+    { id:'reports',      icon:'📈', label:'รายงาน' },
+    { id:'notifications',icon:'🔔', label:'การแจ้งเตือน' },
+    { id:'profile',      icon:'👤', label:'โปรไฟล์' },
+  ];
+  const admin = [
+    { id:'dashboard',    icon:'📊', label:'Dashboard' },
+    { id:'admin',        icon:'🛡️', label:'Admin Panel' },
+    { id:'settings',     icon:'⚙️', label:'ตั้งค่าระบบ' },
+    { id:'notifications',icon:'🔔', label:'การแจ้งเตือน' },
+    { id:'profile',      icon:'👤', label:'โปรไฟล์' },
+  ];
+  return isAdmin ? admin : member;
+}
+
+function renderNav() {
+  const items   = getNavItems();
+  const isAdmin = state.user?.role === 'admin';
+  const sideNav = document.getElementById('sidebar-nav');
+  const botNav  = document.getElementById('bottom-nav-inner');
+  const mobileItems = items.slice(0, 5); // show max 5 in bottom nav
+
+  sideNav.innerHTML = `
+    <div class="sidebar-section-label">${isAdmin ? 'การจัดการ' : 'เมนูหลัก'}</div>
+    ${items.map(i => `
+      <button class="nav-item ${state.page===i.id?'active':''}" onclick="navigate('${i.id}')" id="nav-${i.id}">
+        <span class="nav-icon">${i.icon}</span>
+        <span>${i.label}</span>
+        ${i.id==='notifications' && state.notiCount>0 ? `<span class="nav-badge">${state.notiCount}</span>` : ''}
+      </button>
+    `).join('')}
+    <div style="margin-top:16px">
+      <div class="sidebar-section-label">Quả</div>
+      <button class="nav-item" onclick="promptApiUrl()">
+        <span class="nav-icon">🔗</span><span>ตั้งค่า API URL</span>
+      </button>
+    </div>
+  `;
+
+  botNav.innerHTML = mobileItems.map(i => `
+    <button class="bottom-nav-item ${state.page===i.id?'active':''}" onclick="navigate('${i.id}')">
+      <span class="bottom-nav-icon">${i.icon}</span>
+      <span>${i.label}</span>
+      ${i.id==='notifications' && state.notiCount>0 ? `<span class="bottom-nav-badge">${state.notiCount}</span>` : ''}
+    </button>
+  `).join('');
+
+  // sidebar user info
+  if (state.user) {
+    const initials = (state.user.fullName||'?').split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase();
+    document.getElementById('sidebar-avatar').textContent = initials;
+    document.getElementById('sidebar-name').textContent   = state.user.fullName || state.user.username;
+    document.getElementById('sidebar-role').textContent   = isAdmin ? '👑 ผู้ดูแลระบบ' : '💪 สมาชิก';
+  }
+}
+
+const PAGE_TITLES = {
+  dashboard:'Dashboard 📊', today:'กิจกรรมวันนี้ ⚡', upload:'อัปโหลดแผนออกกำลังกาย 📸',
+  'plan-review':'แผนของฉัน 📋', reports:'รายงานและวิเคราะห์ 📈',
+  notifications:'การแจ้งเตือน 🔔', profile:'โปรไฟล์ 👤',
+  settings:'ตั้งค่าระบบ ⚙️', admin:'Admin Panel 🛡️',
+};
+
+async function navigate(page) {
+  state.page = page;
+  document.getElementById('top-bar-title').textContent = PAGE_TITLES[page] || page;
+  renderNav();
+  closeSidebar();
+
+  const content = document.getElementById('page-content');
+  content.innerHTML = `<div class="loader"><div class="spinner"></div> กำลังโหลด...</div>`;
+  content.className = 'page-enter';
+
+  // Re-trigger animation
+  void content.offsetWidth;
+  content.className = 'page-enter';
+
+  // Stop any running timer
+  if (state.restTimerInterval) { clearInterval(state.restTimerInterval); state.restTimerInterval = null; }
+  // Destroy charts
+  Object.values(state.charts).forEach(c => { try { c.destroy(); } catch(e){} });
+  state.charts = {};
+
+  try {
+    switch (page) {
+      case 'dashboard':      await renderDashboard(content); break;
+      case 'today':          await renderToday(content); break;
+      case 'upload':         renderUpload(content); break;
+      case 'plan-review':    await renderPlanReview(content); break;
+      case 'reports':        await renderReports(content); break;
+      case 'notifications':  await renderNotifications(content); break;
+      case 'profile':        await renderProfile(content); break;
+      case 'settings':       await renderSettings(content); break;
+      case 'admin':          await renderAdmin(content); break;
+      default:               content.innerHTML = '<div class="empty-state"><span class="empty-state-icon">🔍</span><h3>ไม่พบหน้านี้</h3></div>';
+    }
+  } catch(e) {
+    content.innerHTML = `<div class="empty-state"><span class="empty-state-icon">⚠️</span><h3>เกิดข้อผิดพลาด</h3><p>${e.message}</p></div>`;
+    console.error(e);
+  }
+}
+
+// ============================================================
+// AUTH PAGES
+// ============================================================
+function showAuth() {
+  document.getElementById('auth-page').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  renderLoginForm();
+}
+
+function showApp() {
+  document.getElementById('auth-page').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  applyTheme(state.user?.theme);
+  renderNav();
+  loadNotificationCount();
+  navigate('dashboard');
+}
+
+function renderLoginForm() {
+  document.getElementById('auth-card-inner').innerHTML = `
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🏋️</div>
+      <div class="auth-logo-name">FITMATE</div>
+      <div class="auth-logo-tagline">เพื่อนคู่ฟิตของคุณ ฉลาดขึ้นทุกวัน</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label required">ชื่อผู้ใช้</label>
+      <input id="login-username" class="form-control" type="text" placeholder="กรอกชื่อผู้ใช้" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label class="form-label required">รหัสผ่าน</label>
+      <div class="input-group">
+        <input id="login-password" class="form-control" type="password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()" />
+        <button class="input-group-append" type="button" onclick="togglePassword('login-password',this)">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px" id="login-btn" onclick="doLogin()">
+      เข้าสู่ระบบ
+    </button>
+    <div style="text-align:center;margin-top:20px;font-size:14px;color:var(--text2)">
+      ยังไม่มีบัญชี?
+      <button onclick="renderRegisterForm()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-size:14px">สมัครสมาชิก</button>
+    </div>
+    <div style="text-align:center;margin-top:8px">
+      <button onclick="promptApiUrl()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px">🔗 ตั้งค่า API URL</button>
+    </div>
+    <div style="margin-top:20px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);font-size:12px;color:var(--text3)">
+      <strong>Demo:</strong> admin / admin123 &nbsp;|&nbsp; demo_member / member123
+    </div>
+  `;
+  setTimeout(() => document.getElementById('login-username')?.focus(), 100);
+}
+
+function renderRegisterForm() {
+  document.getElementById('auth-card-inner').innerHTML = `
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🏋️</div>
+      <div class="auth-logo-name">สมัครสมาชิก</div>
+      <div class="auth-logo-tagline">เริ่มต้นการเดินทางสู่สุขภาพที่ดี</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label required">ชื่อผู้ใช้</label>
+        <input id="reg-username" class="form-control" type="text" placeholder="username" />
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label required">ชื่อ-นามสกุล</label>
+        <input id="reg-fullname" class="form-control" type="text" placeholder="ชื่อจริง" />
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label required">รหัสผ่าน</label>
+      <div class="input-group">
+        <input id="reg-password" class="form-control" type="password" placeholder="อย่างน้อย 6 ตัวอักษร" />
+        <button class="input-group-append" type="button" onclick="togglePassword('reg-password',this)">👁</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:4px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">เพศ</label>
+        <select id="reg-gender" class="form-control">
+          <option value="">เลือก</option>
+          <option value="male">ชาย</option>
+          <option value="female">หญิง</option>
+          <option value="other">อื่นๆ</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">อายุ</label>
+        <input id="reg-age" class="form-control" type="number" placeholder="ปี" min="10" max="100" />
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">เบอร์โทร</label>
+        <input id="reg-phone" class="form-control" type="tel" placeholder="0x-xxxx" />
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="width:100%;margin-top:16px" onclick="doRegister()">สมัครสมาชิก</button>
+    <div style="text-align:center;margin-top:16px;font-size:14px;color:var(--text2)">
+      มีบัญชีแล้ว?
+      <button onclick="renderLoginForm()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-size:14px">เข้าสู่ระบบ</button>
+    </div>
+  `;
+}
+
+async function doLogin() {
+  const username = document.getElementById('login-username')?.value?.trim();
+  const password = document.getElementById('login-password')?.value;
+  if (!username || !password) { toast('กรุณากรอกข้อมูลให้ครบ', 'error'); return; }
+
+  const btn = document.getElementById('login-btn');
+  btn.textContent = 'กำลังเข้าสู่ระบบ...'; btn.disabled = true;
+  try {
+    const r = await apiPost('login', { username, password });
+    if (!r.success) { toast(r.message || 'เข้าสู่ระบบไม่สำเร็จ', 'error'); return; }
+    state.token = r.data.token;
+    state.user  = r.data.user;
+    localStorage.setItem('fitmate_token', r.data.token);
+    localStorage.setItem('fitmate_user',  JSON.stringify(r.data.user));
+    toast(`ยินดีต้อนรับ ${state.user.fullName}! 💪`, 'success');
+    showApp();
+  } catch(e) { toast(e.message, 'error'); }
+  finally { btn.textContent = 'เข้าสู่ระบบ'; btn.disabled = false; }
+}
+
+async function doRegister() {
+  const data = {
+    username: document.getElementById('reg-username')?.value?.trim(),
+    password: document.getElementById('reg-password')?.value,
+    fullName: document.getElementById('reg-fullname')?.value?.trim(),
+    gender:   document.getElementById('reg-gender')?.value,
+    age:      document.getElementById('reg-age')?.value,
+    phone:    document.getElementById('reg-phone')?.value?.trim(),
+  };
+  if (!data.username || !data.password || !data.fullName) { toast('กรุณากรอกข้อมูลที่จำเป็น', 'error'); return; }
+  try {
+    const r = await apiPost('register', data);
+    if (!r.success) { toast(r.message, 'error'); return; }
+    toast(r.message || 'สมัครสมาชิกสำเร็จ', 'success');
+    if (r.data?.status === 'approved') { document.getElementById('reg-username').value = data.username; renderLoginForm(); }
+    else renderLoginForm();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function logout() {
+  state.token = ''; state.user = null; state.chatHistory = [];
+  localStorage.removeItem('fitmate_token');
+  localStorage.removeItem('fitmate_user');
+  showAuth();
+}
+
+// ============================================================
+// DASHBOARD PAGE
+// ============================================================
+async function renderDashboard(el) {
+  const [sumRes, bodyRes] = await Promise.all([
+    apiGet('getDashboardSummary', { range:'week' }),
+    apiGet('getBodyMetrics'),
+  ]);
+
+  const s = sumRes.data?.summary || {};
+  const wc = sumRes.data?.weeklyComparison || [];
+  const bf = sumRes.data?.bodyFocus || {};
+  const daily = sumRes.data?.dailyData || [];
+  const metrics = bodyRes.data || [];
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div>
+        <div class="section-title">สวัสดี ${state.user?.fullName?.split(' ')[0] || ''} 👋</div>
+        <div class="section-subtitle">${new Date().toLocaleDateString('th-TH',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+      </div>
+      <div class="streak-badge">🔥 ${s.streak||0} วัน Streak</div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value">${s.done||0}</div>
+        <div class="stat-label">✅ ทำสำเร็จ (7 วัน)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--partial)">${s.partial||0}</div>
+        <div class="stat-label">⚡ ทำบางส่วน</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--missed)">${s.missed||0}</div>
+        <div class="stat-label">❌ พลาด</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${s.successRate||0}%</div>
+        <div class="stat-label">🎯 อัตราความสำเร็จ</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Progress Rings -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-title-icon">🎯</span>Progress ภาพรวม</div>
+          <select class="form-control" style="width:auto;padding:6px 10px;font-size:12px" onchange="refreshDashboardRange(this.value)">
+            <option value="week">7 วัน</option>
+            <option value="month">30 วัน</option>
+          </select>
+        </div>
+        <div class="rings-container">
+          ${renderProgressRing(s.successRate||0,'อัตราความสำเร็จ',90)}
+          ${renderProgressRing(s.streak>0?Math.min(100,Math.round((s.streak/30)*100)):0,'Streak',72,'#4ade80')}
+          ${renderProgressRing(s.total>0?Math.min(100,Math.round(((s.done+s.partial*0.5)/Math.max(s.targetDays||4,1))*100)):0,'เป้าสัปดาห์',72,'#60a5fa')}
+        </div>
+      </div>
+
+      <!-- Radar Chart -->
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">🏋️</span>สัดส่วนกล้ามเนื้อ</div></div>
+        <div class="chart-container-sm"><canvas id="radar-chart"></canvas></div>
+      </div>
+
+      <!-- Weekly Comparison Bar -->
+      <div class="card full">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">📊</span>เปรียบเทียบ เป้าหมาย vs จริง (8 สัปดาห์)</div></div>
+        <div class="chart-container"><canvas id="weekly-chart"></canvas></div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="card full">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">🗓</span>Streak Calendar (3 เดือน)</div></div>
+        <div id="heatmap-container"></div>
+        <div style="display:flex;gap:12px;margin-top:12px;font-size:12px;color:var(--text3)">
+          <span>น้อย</span>
+          <div style="display:flex;gap:4px;align-items:center">
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--surface3)"></div>
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--missed)"></div>
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--partial)"></div>
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--done)"></div>
+          </div>
+          <span>มาก</span>
+        </div>
+      </div>
+
+      <!-- Body Weight Trend -->
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">⚖️</span>แนวโน้มน้ำหนัก</div></div>
+        <div class="chart-container-sm"><canvas id="weight-chart"></canvas></div>
+      </div>
+
+      <!-- Weekly Score Gauge -->
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">🏆</span>Consistency Score</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:12px 0">
+          <div class="gauge-container"><canvas id="gauge-chart" width="200" height="110"></canvas></div>
+          <div style="font-size:36px;font-weight:800;color:var(--accent);margin-top:-8px">${s.successRate||0}</div>
+          <div style="font-size:13px;color:var(--text2)">${getConsistencyLabel(s.successRate||0)}</div>
+        </div>
+      </div>
+
+      <!-- Body Silhouette -->
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">🫁</span>บริเวณที่โปรแกรมเน้น</div></div>
+        <div id="silhouette-wrap"></div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">⚡</span>ทำได้เลย</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-primary btn-lg" onclick="navigate('today')">🏃 กิจกรรมวันนี้</button>
+          <button class="btn btn-secondary" onclick="navigate('upload')">📸 อัปโหลดแผนใหม่</button>
+          <button class="btn btn-secondary" onclick="navigate('reports')">📈 ดูรายงาน</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render charts
+  _renderRadarChart(bf);
+  _renderWeeklyBar(wc);
+  _renderHeatmap(daily);
+  _renderWeightChart(metrics);
+  _renderGauge(s.successRate||0);
+  _renderSilhouette(bf);
+}
+
+function getConsistencyLabel(pct) {
+  if (pct>=90) return '🔥 ยอดเยี่ยม! ระดับ Elite';
+  if (pct>=75) return '💪 ดีมาก! ทำต่อไป';
+  if (pct>=50) return '👍 พอใช้ได้ พยายามต่อ';
+  if (pct>=25) return '⚡ เริ่มต้นแล้ว! อย่าหยุด';
+  return '🌱 เริ่มต้นใหม่วันนี้';
+}
+
+function renderProgressRing(pct, label, size, color) {
+  const r = (size - 10) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash  = (pct / 100) * circ;
+  const c     = color || 'var(--accent)';
+  return `
+    <div class="ring-item">
+      <div class="ring-wrap">
+        <svg width="${size}" height="${size}">
+          <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="8"/>
+          <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${c}" stroke-width="8"
+            stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+            style="transition:stroke-dasharray .8s ease"/>
+        </svg>
+        <div class="ring-text">
+          <div class="ring-pct" style="font-size:${size>80?'22px':'16px'};color:${c}">${pct}%</div>
+        </div>
+      </div>
+      <div class="ring-item-label">${label}</div>
+    </div>`;
+}
+
+function _renderRadarChart(bf) {
+  const ctx = document.getElementById('radar-chart');
+  if (!ctx) return;
+  const labels = Object.keys(bf);
+  const data   = Object.values(bf);
+  const max    = Math.max(...data, 1);
+  state.charts.radar = new Chart(ctx, {
+    type:'radar',
+    data:{ labels,
+      datasets:[{ label:'ความถี่ที่ฝึก', data,
+        backgroundColor:`rgba(var(--accent-rgb),.2)`,
+        borderColor:`rgba(var(--accent-rgb),1)`,
+        pointBackgroundColor:`rgba(var(--accent-rgb),1)`,
+        borderWidth:2, pointRadius:4
+      }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{ r:{
+        ticks:{ display:false },
+        grid:{ color:'rgba(255,255,255,0.06)' },
+        pointLabels:{ color:'var(--text2)', font:{ size:11 } },
+      }}
+    }
+  });
+}
+
+function _renderWeeklyBar(wc) {
+  const ctx = document.getElementById('weekly-chart');
+  if (!ctx || !wc.length) return;
+  const labels = wc.map((_,i) => i===wc.length-1 ? 'สัปดาห์นี้' : `-${wc.length-1-i}w`);
+  state.charts.weekly = new Chart(ctx, {
+    type:'bar',
+    data:{ labels,
+      datasets:[
+        { label:'เป้าหมาย', data:wc.map(w=>w.target), backgroundColor:'rgba(255,255,255,0.06)', borderRadius:6 },
+        { label:'จริง', data:wc.map(w=>w.actual),
+          backgroundColor:`rgba(var(--accent-rgb),0.8)`, borderRadius:6 }
+      ]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'var(--text2)', font:{size:12} } } },
+      scales:{
+        x:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'var(--text2)' } },
+        y:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'var(--text2)', stepSize:1 } }
+      }
+    }
+  });
+}
+
+function _renderHeatmap(daily) {
+  const el = document.getElementById('heatmap-container');
+  if (!el) return;
+  const map = {};
+  daily.forEach(d => { map[d.date] = d.status; });
+
+  const today  = new Date();
+  const days   = 90;
+  const weeks  = Math.ceil(days / 7);
+  let html     = '<div class="heatmap-wrap"><div class="heatmap-grid">';
+
+  for (let w = weeks - 1; w >= 0; w--) {
+    html += '<div class="heatmap-col">';
+    for (let d = 6; d >= 0; d--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - (w * 7 + d));
+      const ds   = date.toISOString().split('T')[0];
+      const status = map[ds] || '';
+      const title  = `${ds}${status ? ': '+status : ''}`;
+      html += `<div class="heatmap-cell ${status}" title="${title}" data-date="${ds}"></div>`;
+    }
+    html += '</div>';
+  }
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
+function _renderWeightChart(metrics) {
+  const ctx = document.getElementById('weight-chart');
+  if (!ctx || !metrics.length) return;
+  const labels = metrics.map(m => m.date.slice(5));
+  const data   = metrics.map(m => parseFloat(m.weight)||0).filter(v => v>0);
+  if (!data.length) return;
+
+  state.charts.weight = new Chart(ctx, {
+    type:'line',
+    data:{ labels,
+      datasets:[{ label:'น้ำหนัก (kg)', data,
+        borderColor:`rgba(var(--accent-rgb),1)`,
+        backgroundColor:`rgba(var(--accent-rgb),0.1)`,
+        fill:true, tension:.4, pointRadius:4,
+        pointBackgroundColor:`rgba(var(--accent-rgb),1)`
+      }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ color:'var(--text2)', font:{size:10} } },
+        y:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'var(--text2)' } }
+      }
+    }
+  });
+}
+
+function _renderGauge(pct) {
+  const ctx = document.getElementById('gauge-chart');
+  if (!ctx) return;
+  const c = ctx.getContext('2d');
+  const cx = 100, cy = 100, r = 80;
+  c.clearRect(0, 0, 200, 110);
+  // Background arc
+  c.beginPath(); c.arc(cx,cy,r,Math.PI,2*Math.PI);
+  c.strokeStyle = 'rgba(255,255,255,0.06)'; c.lineWidth = 16; c.stroke();
+  // Value arc
+  const angle = Math.PI + (pct/100) * Math.PI;
+  const grad  = c.createLinearGradient(20,100,180,100);
+  grad.addColorStop(0,'#f87171'); grad.addColorStop(.5,'#fbbf24'); grad.addColorStop(1,'#4ade80');
+  c.beginPath(); c.arc(cx,cy,r,Math.PI,angle);
+  c.strokeStyle = grad; c.lineWidth = 16; c.lineCap = 'round'; c.stroke();
+}
+
+function _renderSilhouette(bf) {
+  const el = document.getElementById('silhouette-wrap');
+  if (!el) return;
+  const max = Math.max(...Object.values(bf), 1);
+  const opacity = (key) => Math.min(0.9, (bf[key]||0) / max * 0.9 + 0.1);
+  const acc = `rgba(var(--accent-rgb),`;
+  el.innerHTML = `
+    <div class="silhouette-wrap">
+      <svg viewBox="0 0 120 220" style="max-height:220px;width:100%">
+        <!-- Head -->
+        <circle cx="60" cy="22" r="18" fill="var(--surface3)" stroke="var(--border2)" stroke-width="1"/>
+        <!-- Neck -->
+        <rect x="55" y="38" width="10" height="12" rx="4" fill="var(--surface3)"/>
+        <!-- Chest (หน้าอก) -->
+        <ellipse cx="60" cy="70" rx="28" ry="20" fill="${acc}${opacity('หน้าอก')})" />
+        <text x="60" y="73" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">หน้าอก</text>
+        <!-- Back (shown as side highlight) -->
+        <!-- Shoulders (ไหล่) -->
+        <ellipse cx="30" cy="62" rx="14" ry="10" fill="${acc}${opacity('ไหล่')})" />
+        <ellipse cx="90" cy="62" rx="14" ry="10" fill="${acc}${opacity('ไหล่')})" />
+        <!-- Arms -->
+        <rect x="15" y="68" width="14" height="40" rx="7" fill="${acc}${opacity('แขน')})" />
+        <rect x="91" y="68" width="14" height="40" rx="7" fill="${acc}${opacity('แขน')})" />
+        <!-- Abs (ท้อง) -->
+        <ellipse cx="60" cy="100" rx="22" ry="20" fill="${acc}${opacity('ท้อง')})" />
+        <text x="60" y="103" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">ท้อง</text>
+        <!-- Hips (สะโพก) -->
+        <ellipse cx="60" cy="128" rx="26" ry="14" fill="${acc}${opacity('สะโพก')})" />
+        <text x="60" y="131" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">สะโพก</text>
+        <!-- Legs (ขา) -->
+        <rect x="38" y="140" width="18" height="55" rx="9" fill="${acc}${opacity('ขา')})" />
+        <rect x="64" y="140" width="18" height="55" rx="9" fill="${acc}${opacity('ขา')})" />
+        <text x="60" y="168" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">ขา</text>
+        <!-- Feet -->
+        <ellipse cx="47" cy="197" rx="12" ry="7" fill="var(--surface3)"/>
+        <ellipse cx="73" cy="197" rx="12" ry="7" fill="var(--surface3)"/>
+      </svg>
+    </div>`;
+}
+
+async function refreshDashboardRange(range) {
+  try {
+    const r = await apiGet('getDashboardSummary', { range });
+    // just re-render dashboard
+    await renderDashboard(document.getElementById('page-content'));
+  } catch(e) {}
+}
+
+// ============================================================
+// TODAY'S ACTIVITY PAGE
+// ============================================================
+async function renderToday(el) {
+  const r = await apiGet('getTodayActivity');
+  const { plan, today, todayLog, currentDay } = r.data || {};
+
+  if (!plan) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-state-icon">📋</span>
+        <h3>ยังไม่มีแผนออกกำลังกาย</h3>
+        <p>อัปโหลดรูปตารางออกกำลังกายเพื่อเริ่มต้น</p>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="navigate('upload')">📸 อัปโหลดแผน</button>
+      </div>`;
+    return;
+  }
+
+  const isRest   = today?.focusArea === 'พัก' || !today?.exercises?.length;
+  const checked  = new Set();
+  let timerSec   = parseInt(today?.restSeconds || 60);
+  let timerRun   = false;
+
+  if (todayLog) {
+    el.innerHTML = `
+      <div class="section-header">
+        <div><div class="section-title">กิจกรรมวันนี้ ✅</div><div class="section-subtitle">บันทึกเรียบร้อยแล้ว</div></div>
+      </div>
+      <div class="card" style="text-align:center;padding:40px">
+        <div style="font-size:64px;margin-bottom:16px">${{done:'🎉',partial:'👏',missed:'😊'}[todayLog.status]||'✅'}</div>
+        <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">${{done:'ยอดเยี่ยม!',partial:'ทำได้บางส่วน',missed:'พักวันนี้'}[todayLog.status]||'บันทึกแล้ว'}</h2>
+        <p style="color:var(--text2)">${todayLog.note || ''}</p>
+        <button class="btn btn-secondary" style="margin-top:20px" onclick="navigate('dashboard')">กลับ Dashboard</button>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div>
+        <div class="section-title">${today?.dayLabel || 'กิจกรรมวันนี้'}</div>
+        <div class="section-subtitle">วันที่ ${currentDay} / ${plan.totalDays} — ${plan.planName}</div>
+      </div>
+      <span class="badge badge-info">${today?.focusArea || 'ออกกำลังกาย'}</span>
+    </div>
+
+    ${isRest ? `
+      <div class="card" style="text-align:center;padding:48px">
+        <div style="font-size:64px;margin-bottom:16px">😴</div>
+        <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">วันพักผ่อน</h2>
+        <p style="color:var(--text2)">ร่างกายต้องการเวลาฟื้นตัว การพักผ่อนคือส่วนหนึ่งของการออกกำลังกาย</p>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="logRestDay('${today?.planDayId}')">✅ บันทึกวันพัก</button>
+      </div>
+    ` : `
+      <!-- Exercise list -->
+      <div class="exercise-list" id="exercise-list">
+        ${(today?.exercises||[]).map(ex => `
+          <div class="exercise-card" id="ex-${ex.exId}" onclick="toggleExercise('${ex.exId}',this)">
+            <div class="exercise-check" id="chk-${ex.exId}">✓</div>
+            <div style="flex:1">
+              <div class="exercise-name">${ex.name}</div>
+              <div class="exercise-meta">${ex.sets} เซ็ต × ${ex.repsDuration} ${ex.equipment?'• '+ex.equipment:''}</div>
+            </div>
+            <span class="badge badge-gray" style="flex-shrink:0">#${ex.order}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Rest Timer -->
+      <div class="rest-timer" style="margin-top:20px" id="timer-card">
+        <h3 style="font-size:14px;color:var(--text2);margin-bottom:16px">⏱ Timer พักระหว่างเซ็ต</h3>
+        <div class="timer-ring">
+          <svg width="160" height="160">
+            <circle cx="80" cy="80" r="70" fill="none" stroke="var(--surface3)" stroke-width="10"/>
+            <circle id="timer-arc" cx="80" cy="80" r="70" fill="none" stroke="var(--accent)" stroke-width="10"
+              stroke-dasharray="${2*Math.PI*70} ${2*Math.PI*70}" stroke-linecap="round"
+              style="transform:rotate(-90deg);transform-origin:80px 80px;transition:stroke-dasharray .5s"/>
+          </svg>
+          <div class="timer-text">
+            <div class="timer-seconds" id="timer-display">${timerSec}</div>
+            <div class="timer-label">วินาที</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
+          <button class="btn btn-primary" id="timer-btn" onclick="startRestTimer(${today?.restSeconds||60})">▶ เริ่ม</button>
+          <button class="btn btn-secondary" onclick="resetRestTimer(${today?.restSeconds||60})">↺ รีเซ็ต</button>
+        </div>
+      </div>
+
+      <!-- Photo upload & submit -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">📸</span>ส่งรายงานผล</div></div>
+        <div style="margin-bottom:16px">
+          <div id="activity-progress" style="height:8px;background:var(--surface3);border-radius:4px;margin-bottom:8px;overflow:hidden">
+            <div id="activity-progress-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .3s;width:0%"></div>
+          </div>
+          <div style="font-size:12px;color:var(--text2)" id="activity-progress-text">เลือกรูปหรือส่งผลทันที</div>
+        </div>
+        <div class="upload-zone" id="activity-drop" style="padding:24px" onclick="document.getElementById('activity-img').click()">
+          <span class="upload-icon" style="font-size:32px">📷</span>
+          <div class="upload-title" style="font-size:15px">ถ่ายรูปหรือเลือกรูปกิจกรรม</div>
+          <div class="upload-sub" style="font-size:12px">AI จะวิเคราะห์ท่าทางให้อัตโนมัติ</div>
+        </div>
+        <input type="file" id="activity-img" accept="image/*" capture="environment" style="display:none" onchange="handleActivityImage(this,'${today?.planDayId}')"/>
+        <div id="activity-ai-result" style="display:none"></div>
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label">โน้ตส่วนตัว (ไม่บังคับ)</label>
+          <textarea id="activity-note" class="form-control" rows="2" placeholder="เช่น รู้สึกดีมาก, เพิ่มน้ำหนักได้แล้ว..."></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn btn-primary" style="flex:1" onclick="submitActivity('${today?.planDayId}','done')">✅ ทำครบแล้ว!</button>
+          <button class="btn btn-secondary" onclick="submitActivity('${today?.planDayId}','partial')">⚡ ทำบางส่วน</button>
+          <button class="btn btn-danger btn-sm" onclick="submitActivity('${today?.planDayId}','missed')">❌</button>
+        </div>
+      </div>
+    `}
+  `;
+
+  // Update progress bar as exercises are checked
+  function updateProgress() {
+    const total = today?.exercises?.length || 1;
+    const pct   = Math.round((checked.size / total) * 100);
+    const bar   = document.getElementById('activity-progress-bar');
+    const txt   = document.getElementById('activity-progress-text');
+    if (bar) bar.style.width = pct + '%';
+    if (txt) txt.textContent = `${checked.size} / ${total} ท่า (${pct}%)`;
+  }
+
+  window.toggleExercise = (id, card) => {
+    if (checked.has(id)) { checked.delete(id); card.classList.remove('completed'); }
+    else { checked.add(id); card.classList.add('completed'); }
+    updateProgress();
+  };
+
+  let _timerTotal = today?.restSeconds || 60;
+  let _timerLeft  = _timerTotal;
+
+  window.startRestTimer = (sec) => {
+    if (state.restTimerInterval) { clearInterval(state.restTimerInterval); state.restTimerInterval = null; }
+    _timerTotal = sec;
+    _timerLeft  = sec;
+    const btn   = document.getElementById('timer-btn');
+    const disp  = document.getElementById('timer-display');
+    const arc   = document.getElementById('timer-arc');
+    const circ  = 2 * Math.PI * 70;
+    if (btn) btn.textContent = '⏸ หยุด';
+    state.restTimerInterval = setInterval(() => {
+      _timerLeft--;
+      if (disp) disp.textContent = Math.max(0, _timerLeft);
+      const frac = _timerLeft / _timerTotal;
+      if (arc) arc.style.strokeDasharray = `${frac * circ} ${circ}`;
+      if (_timerLeft <= 0) {
+        clearInterval(state.restTimerInterval); state.restTimerInterval = null;
+        if (btn) btn.textContent = '▶ เริ่ม';
+        toast('⏰ หมดเวลาพักแล้ว! ออกกำลังกายต่อได้เลย 💪', 'info');
+      }
+    }, 1000);
+  };
+
+  window.resetRestTimer = (sec) => {
+    if (state.restTimerInterval) { clearInterval(state.restTimerInterval); state.restTimerInterval = null; }
+    _timerLeft = sec;
+    const disp = document.getElementById('timer-display');
+    const arc  = document.getElementById('timer-arc');
+    const btn  = document.getElementById('timer-btn');
+    if (disp) disp.textContent = sec;
+    if (arc)  arc.style.strokeDasharray = `${2*Math.PI*70} ${2*Math.PI*70}`;
+    if (btn)  btn.textContent = '▶ เริ่ม';
+  };
+
+  window.logRestDay = async (pdId) => {
+    await _submitActivityLog(pdId, 'done', [], 'วันพักผ่อน');
+  };
+}
+
+window.handleActivityImage = async (input, planDayId) => {
+  const file = input.files[0];
+  if (!file) return;
+  const resultEl = document.getElementById('activity-ai-result');
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = `<div class="loader"><div class="spinner"></div>AI กำลังวิเคราะห์รูป...</div>`;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const b64 = e.target.result.split(',')[1];
+    try {
+      const r = await apiPost('analyzeActivityImage', { base64Image: b64, planDayId });
+      const d = r.data || {};
+      resultEl.innerHTML = `
+        <div class="ai-result">
+          <div class="ai-result-header">🤖 AI วิเคราะห์</div>
+          <p style="font-size:14px;margin-bottom:8px">${d.analysis || ''}</p>
+          ${d.formTips ? `<p style="font-size:13px;color:var(--text2)">💡 ${d.formTips}</p>` : ''}
+          ${d.motivationMessage ? `<p style="font-size:14px;font-weight:600;color:var(--accent);margin-top:8px">💪 ${d.motivationMessage}</p>` : ''}
+          ${d.status ? `<span class="badge badge-${d.status==='done'?'success':d.status==='partial'?'warning':'danger'}" style="margin-top:8px">${{done:'✅ ทำสำเร็จ',partial:'⚡ บางส่วน',missed:'❌ พลาด'}[d.status]||d.status}</span>` : ''}
+        </div>`;
+    } catch(err) {
+      resultEl.innerHTML = `<div class="form-error">วิเคราะห์ไม่สำเร็จ: ${err.message}</div>`;
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
+window.submitActivity = async (planDayId, status) => {
+  const note = document.getElementById('activity-note')?.value || '';
+  await _submitActivityLog(planDayId, status, [...(window._checked||[])], note);
+};
+
+async function _submitActivityLog(planDayId, status, exercises, note) {
+  try {
+    const r = await apiPost('submitActivityLog', {
+      planDayId, resultJson: { status, exercisesCompleted: exercises, note, analysis: note }
+    });
+    if (r.success) {
+      toast(r.message || 'บันทึกเรียบร้อย', 'success');
+      await renderToday(document.getElementById('page-content'));
+    } else { toast(r.message, 'error'); }
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ============================================================
+// UPLOAD PLAN PAGE
+// ============================================================
+function renderUpload(el) {
+  el.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">อัปโหลดแผนออกกำลังกาย 📸</div>
+      <div class="section-subtitle">ถ่ายรูปตารางออกกำลังกาย แล้ว AI จะแปลงเป็นแผนรายวันให้อัตโนมัติ</div></div>
+    </div>
+    <div class="card">
+      <div class="upload-zone" id="plan-drop" onclick="document.getElementById('plan-img').click()"
+        ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="handlePlanDrop(event)">
+        <span class="upload-icon">📄</span>
+        <div class="upload-title">ลากวางรูปหรือคลิกเพื่อเลือก</div>
+        <div class="upload-sub">รองรับ JPG, PNG, WebP — รูปตารางออกกำลังกายทุกแบบ</div>
+        <input type="file" id="plan-img" accept="image/*" style="display:none" onchange="handlePlanImage(this)"/>
+      </div>
+
+      <div id="plan-preview" style="display:none;margin-top:16px;text-align:center">
+        <img id="plan-img-preview" style="max-height:280px;border-radius:var(--radius);border:1px solid var(--border);margin:0 auto"/>
+        <button class="btn btn-primary" style="margin-top:12px" id="analyze-btn" onclick="analyzePlanImage()">🤖 วิเคราะห์ด้วย AI</button>
+      </div>
+
+      <div id="plan-progress" style="display:none;margin-top:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div class="spinner"></div>
+          <span id="plan-progress-text">AI กำลังวิเคราะห์ตาราง...</span>
+        </div>
+        <div style="height:6px;background:var(--surface3);border-radius:3px;overflow:hidden">
+          <div id="plan-progress-bar" style="height:100%;background:var(--accent);border-radius:3px;animation:progressAnim 2s ease-in-out infinite;width:60%"></div>
+        </div>
+      </div>
+
+      <div id="plan-result" style="display:none"></div>
+    </div>
+
+    <style>
+    @keyframes progressAnim{0%{width:20%}50%{width:80%}100%{width:20%}}
+    </style>
+  `;
+}
+
+let _planBase64 = '';
+window.handlePlanDrop = (e) => {
+  e.preventDefault();
+  document.getElementById('plan-drop')?.classList.remove('dragover');
+  const file = e.dataTransfer?.files[0];
+  if (file) loadPlanFile(file);
+};
+window.handlePlanImage = (input) => { if (input.files[0]) loadPlanFile(input.files[0]); };
+
+function loadPlanFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const src = e.target.result;
+    _planBase64 = src.split(',')[1];
+    document.getElementById('plan-img-preview').src = src;
+    document.getElementById('plan-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+window.analyzePlanImage = async () => {
+  if (!_planBase64) { toast('กรุณาเลือกรูปก่อน', 'error'); return; }
+  document.getElementById('plan-progress').style.display = 'block';
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('plan-result').style.display = 'none';
+
+  try {
+    const r = await apiPost('analyzePlanImage', { base64Image: _planBase64 });
+    document.getElementById('plan-progress').style.display = 'none';
+
+    if (!r.success) {
+      toast(r.message, 'error');
+      document.getElementById('analyze-btn').disabled = false;
+      return;
+    }
+
+    const plan = r.data;
+    renderPlanResult(plan);
+  } catch(e) {
+    document.getElementById('plan-progress').style.display = 'none';
+    document.getElementById('analyze-btn').disabled = false;
+    toast('วิเคราะห์ไม่สำเร็จ: ' + e.message, 'error');
+  }
+};
+
+function renderPlanResult(plan) {
+  const el = document.getElementById('plan-result');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="ai-result" style="margin-top:16px">
+      <div class="ai-result-header">🤖 ผลการวิเคราะห์ AI</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px">
+        <div class="stat-card card-sm">
+          <div class="stat-value">${plan.totalDays}</div><div class="stat-label">จำนวนวัน</div>
+        </div>
+        <div class="stat-card card-sm">
+          <div class="stat-value">${(plan.days||[]).reduce((s,d)=>s+(d.exercises?.length||0),0)}</div>
+          <div class="stat-label">ท่าออกกำลังกาย</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ชื่อแผน</label>
+        <input id="plan-name-input" class="form-control" value="${plan.planName||'แผนออกกำลังกายใหม่'}" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">เป้าหมาย</label>
+        <input id="plan-goal-input" class="form-control" value="${plan.goal||''}" placeholder="เช่น ลดน้ำหนัก, เพิ่มกล้ามเนื้อ" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">วันเริ่มต้น</label>
+        <input id="plan-start-input" class="form-control" type="date" value="${new Date().toISOString().split('T')[0]}" />
+      </div>
+
+      <details style="margin-bottom:16px">
+        <summary style="cursor:pointer;font-weight:600;padding:8px 0;color:var(--text2)">📋 ดูแผนรายวัน (${(plan.days||[]).length} วัน)</summary>
+        <div style="margin-top:12px;max-height:300px;overflow-y:auto">
+          ${(plan.days||[]).map(d=>`
+            <div style="padding:10px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:8px">
+              <div style="font-weight:600;margin-bottom:4px">วันที่ ${d.dayIndex}: ${d.dayLabel}</div>
+              ${d.focusArea ? `<div style="font-size:12px;color:var(--text2);margin-bottom:6px">${d.focusArea}</div>` : ''}
+              ${(d.exercises||[]).map(e=>`<div style="font-size:12px;color:var(--text3);padding:2px 0">• ${e.name} — ${e.sets} เซ็ต × ${e.repsDuration}</div>`).join('')}
+              ${d.isRest ? '<div style="font-size:12px;color:var(--text3)">😴 วันพัก</div>' : ''}
+            </div>
+          `).join('')}
+        </div>
+      </details>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" style="flex:1" onclick="savePlanDraft()">💾 บันทึกแผน</button>
+        <button class="btn btn-secondary" onclick="renderUpload(document.getElementById('page-content'))">↩ วิเคราะห์ใหม่</button>
+      </div>
+    </div>
+  `;
+  window._currentPlan = plan;
+}
+
+window.savePlanDraft = async () => {
+  if (!window._currentPlan) return;
+  const plan = {
+    ...window._currentPlan,
+    planName:  document.getElementById('plan-name-input')?.value || window._currentPlan.planName,
+    goal:      document.getElementById('plan-goal-input')?.value  || '',
+    startDate: document.getElementById('plan-start-input')?.value || new Date().toISOString().split('T')[0],
+  };
+  try {
+    const r = await apiPost('savePlanDraft', { planJson: plan });
+    if (r.success) { toast('บันทึกแผนร่างสำเร็จ! ไปตรวจสอบได้เลย 📋', 'success'); navigate('plan-review'); }
+    else toast(r.message, 'error');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ============================================================
+// PLAN REVIEW PAGE
+// ============================================================
+async function renderPlanReview(el) {
+  const r = await apiGet('getUserPlans');
+  const plans = r.data || [];
+
+  if (!plans.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <span class="empty-state-icon">📋</span>
+        <h3>ยังไม่มีแผนออกกำลังกาย</h3>
+        <p>เริ่มต้นด้วยการอัปโหลดตารางออกกำลังกายของคุณ</p>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="navigate('upload')">📸 อัปโหลดแผน</button>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">แผนของฉัน 📋</div></div>
+      <button class="btn btn-primary btn-sm" onclick="navigate('upload')">+ แผนใหม่</button>
+    </div>
+    <div id="plans-list">
+      ${plans.map(p => `
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div>
+              <div style="font-size:16px;font-weight:700">${p.planName}</div>
+              <div style="font-size:13px;color:var(--text2);margin-top:4px">
+                ${p.totalDays} วัน • เริ่ม ${p.startDate || '—'} • ${p.goal || '—'}
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span class="badge badge-${p.status==='active'?'success':p.status==='draft'?'warning':'gray'}">
+                ${{active:'✅ Active',draft:'📝 Draft',completed:'🏁 เสร็จสิ้น',approved:'👍 อนุมัติ'}[p.status]||p.status}
+              </span>
+              <button class="btn btn-secondary btn-sm" onclick="viewPlan('${p.planId}')">📋 ดูแผน</button>
+              ${p.status==='draft' ? `<button class="btn btn-primary btn-sm" onclick="approveMyPlan('${p.planId}')">✅ เริ่มใช้แผนนี้</button>` : ''}
+              <button class="btn btn-danger btn-sm" onclick="deletePlan('${p.planId}')">🗑</button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div id="plan-detail-view"></div>
+  `;
+}
+
+window.viewPlan = async (planId) => {
+  const r = await apiGet('getPlanDetail', { planId });
+  const plan = r.data;
+  if (!plan) { toast('ไม่พบแผน', 'error'); return; }
+
+  const el = document.getElementById('plan-detail-view');
+  el.innerHTML = `
+    <div class="card" style="margin-top:20px">
+      <div class="card-header">
+        <div class="card-title">📋 ${plan.planName}</div>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('plan-detail-view').innerHTML=''">✕ ปิด</button>
+      </div>
+      ${plan.days.map(day => `
+        <div class="plan-day-card">
+          <div class="plan-day-header" onclick="this.nextElementSibling.classList.toggle('open')">
+            <div class="plan-day-index">${day.dayIndex}</div>
+            <div style="flex:1">
+              <div style="font-weight:600">${day.dayLabel}</div>
+              <div style="font-size:12px;color:var(--text2)">${day.focusArea||''}</div>
+            </div>
+            <span class="badge badge-gray">${day.exercises?.length||0} ท่า</span>
+            ${day.restSeconds>0?`<span class="badge badge-info" style="margin-left:6px">⏱ ${day.restSeconds}วิ</span>`:''}
+          </div>
+          <div class="plan-day-body">
+            ${day.exercises?.length ? `
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>#</th><th>ท่าออกกำลังกาย</th><th>เซ็ต</th><th>จำนวน</th><th>อุปกรณ์</th></tr></thead>
+                  <tbody>
+                    ${day.exercises.map(e => `
+                      <tr>
+                        <td>${e.order}</td>
+                        <td style="font-weight:600">${e.name}</td>
+                        <td>${e.sets}</td>
+                        <td>${e.repsDuration}</td>
+                        <td style="color:var(--text2)">${e.equipment||'—'}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            ` : '<p style="color:var(--text3);padding:8px 0">😴 วันพักผ่อน</p>'}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+};
+
+window.approveMyPlan = async (planId) => {
+  const r = await apiPost('approvePlan', { planId });
+  if (r.success) { toast('เริ่มใช้แผนนี้แล้ว 🎯', 'success'); await renderPlanReview(document.getElementById('page-content')); }
+  else toast(r.message, 'error');
+};
+
+window.deletePlan = async (planId) => {
+  if (!confirm('ต้องการลบแผนนี้?')) return;
+  const r = await apiPost('deletePlan', { planId });
+  if (r.success) { toast('ลบแผนเรียบร้อย', 'success'); await renderPlanReview(document.getElementById('page-content')); }
+  else toast(r.message, 'error');
+};
+
+// ============================================================
+// REPORTS PAGE
+// ============================================================
+async function renderReports(el) {
+  el.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">รายงานและวิเคราะห์ 📈</div></div>
+    </div>
+    <div class="tabs" id="report-tabs">
+      <button class="tab-btn active" onclick="switchReportTab('weekly',this)">รายสัปดาห์</button>
+      <button class="tab-btn" onclick="switchReportTab('monthly',this)">รายเดือน</button>
+      <button class="tab-btn" onclick="switchReportTab('coach',this)">💬 AI โค้ช</button>
+    </div>
+    <div id="report-content"></div>
+  `;
+  await switchReportTab('weekly', document.querySelector('#report-tabs .tab-btn'));
+}
+
+window.switchReportTab = async (tab, btn) => {
+  document.querySelectorAll('#report-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn?.classList.add('active');
+  const el = document.getElementById('report-content');
+  el.innerHTML = `<div class="loader"><div class="spinner"></div></div>`;
+
+  if (tab === 'weekly') {
+    const r = await apiGet('getWeeklyReport');
+    const d = r.data || {};
+    const s = d.summary || {};
+    el.innerHTML = `
+      <div class="stat-grid" style="margin-bottom:20px">
+        <div class="stat-card"><div class="stat-value">${s.done||0}</div><div class="stat-label">✅ สำเร็จ</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:var(--partial)">${s.partial||0}</div><div class="stat-label">⚡ บางส่วน</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:var(--missed)">${s.missed||0}</div><div class="stat-label">❌ พลาด</div></div>
+        <div class="stat-card"><div class="stat-value">${d.achievementRate||0}%</div><div class="stat-label">🎯 บรรลุเป้า</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">บันทึกรายวัน</div></div>
+        ${(d.logs||[]).length ? `
+          <div class="table-wrap"><table>
+            <thead><tr><th>วันที่</th><th>สถานะ</th><th>โน้ต</th></tr></thead>
+            <tbody>
+              ${(d.logs||[]).map(l=>`
+                <tr>
+                  <td>${l.date}</td>
+                  <td><span class="badge badge-${l.status==='done'?'success':l.status==='partial'?'warning':'danger'}">${{done:'✅ สำเร็จ',partial:'⚡ บางส่วน',missed:'❌ พลาด'}[l.status]||l.status}</span></td>
+                  <td style="color:var(--text2);font-size:13px">${l.note||'—'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table></div>
+        ` : '<div class="empty-state" style="padding:24px"><span class="empty-state-icon">📅</span><h3>ยังไม่มีบันทึกสัปดาห์นี้</h3></div>'}
+      </div>
+    `;
+  } else if (tab === 'monthly') {
+    const r = await apiGet('getMonthlyReport');
+    const d = r.data || {};
+    const s = d.summary || {};
+    el.innerHTML = `
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><div class="card-title">📅 ${d.month||'เดือนนี้'}</div></div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-value">${s.done||0}</div><div class="stat-label">✅ สำเร็จ</div></div>
+          <div class="stat-card"><div class="stat-value">${s.target||0}</div><div class="stat-label">🎯 เป้าหมาย</div></div>
+          <div class="stat-card"><div class="stat-value">${d.achievementRate||0}%</div><div class="stat-label">📊 บรรลุเป้า</div></div>
+        </div>
+        <div style="margin-top:16px">
+          <div style="height:10px;background:var(--surface3);border-radius:5px;overflow:hidden">
+            <div style="height:100%;background:var(--accent);border-radius:5px;width:${d.achievementRate||0}%;transition:width 1s ease"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">บันทึกรายวัน</div></div>
+        <div class="chart-container"><canvas id="monthly-bar-chart"></canvas></div>
+      </div>
+    `;
+    // Render monthly chart
+    const ctx = document.getElementById('monthly-bar-chart');
+    if (ctx && d.logs?.length) {
+      const labels = d.logs.map(l=>l.date.slice(5));
+      const colors = d.logs.map(l=>l.status==='done'?'rgba(74,222,128,.8)':l.status==='partial'?'rgba(251,191,36,.8)':'rgba(248,113,113,.8)');
+      state.charts.monthly = new Chart(ctx, {
+        type:'bar', data:{ labels, datasets:[{ data:d.logs.map(()=>1), backgroundColor:colors, borderRadius:4 }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
+          scales:{ y:{display:false}, x:{ grid:{display:false}, ticks:{color:'var(--text2)',font:{size:9}} } } }
+      });
+    }
+  } else { // coach
+    el.innerHTML = `
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div class="card-title"><span class="card-title-icon">🤖</span>AI โค้ช</div>
+          <div style="display:flex;gap:8px">
+            <select id="coach-range" class="form-control" style="width:auto;padding:6px 10px;font-size:12px">
+              <option value="week">สัปดาห์</option>
+              <option value="month">เดือน</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="loadCoachAdvice()">🔄 ขอคำแนะนำ</button>
+          </div>
+        </div>
+        <div id="coach-advice-text" style="font-size:15px;line-height:1.8;color:var(--text);padding:8px 0">
+          <div class="loader"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- AI Chat Coach -->
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">💬</span>ถามโค้ช AI</div></div>
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-bubble ai">สวัสดีครับ! ผมคือ AI โค้ชส่วนตัวของคุณ ถามอะไรก็ได้เกี่ยวกับการออกกำลังกาย 💪</div>
+          </div>
+          <div class="chat-input-wrap">
+            <input id="chat-input" class="form-control" placeholder="ถามอะไรก็ได้..." onkeydown="if(event.key==='Enter')sendChat()" />
+            <button class="btn btn-primary" onclick="sendChat()">ส่ง</button>
+          </div>
+        </div>
+      </div>
+    `;
+    loadCoachAdvice();
+  }
+};
+
+window.loadCoachAdvice = async () => {
+  const range = document.getElementById('coach-range')?.value || 'week';
+  const el    = document.getElementById('coach-advice-text');
+  if (el) el.innerHTML = `<div class="loader"><div class="spinner"></div></div>`;
+  try {
+    const r = await apiPost('generateCoachAdvice', { range });
+    if (el) el.innerHTML = r.data?.advice
+      ? r.data.advice.split('\n').map(l=>`<p>${l}</p>`).join('')
+      : r.message || 'ไม่สามารถโหลดคำแนะนำได้';
+  } catch(e) { if(el) el.textContent = 'เกิดข้อผิดพลาด: ' + e.message; }
+};
+
+window.sendChat = async () => {
+  const input  = document.getElementById('chat-input');
+  const msgs   = document.getElementById('chat-messages');
+  const msg    = input?.value?.trim();
+  if (!msg) return;
+
+  input.value = '';
+  msgs.innerHTML += `<div class="chat-bubble user">${msg}</div>`;
+  msgs.innerHTML += `<div class="chat-bubble ai" id="chat-typing"><span class="pulse">...</span></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  state.chatHistory.push({ role:'user', content: msg });
+
+  try {
+    const r = await apiPost('chatWithCoach', { message: msg, history: state.chatHistory });
+    const reply = r.data?.reply || 'ขอโทษครับ ไม่เข้าใจคำถามนี้';
+    state.chatHistory.push({ role:'ai', content: reply });
+    const typing = document.getElementById('chat-typing');
+    if (typing) typing.outerHTML = `<div class="chat-bubble ai">${reply}</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch(e) {
+    const typing = document.getElementById('chat-typing');
+    if (typing) typing.outerHTML = `<div class="chat-bubble ai">ขออภัย เกิดข้อผิดพลาด</div>`;
+  }
+};
+
+// ============================================================
+// NOTIFICATIONS PAGE
+// ============================================================
+async function renderNotifications(el) {
+  const r = await apiGet('getNotifications');
+  const notis = r.data || [];
+  state.notiCount = notis.filter(n => !n.isRead).length;
+  renderNav();
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">การแจ้งเตือน 🔔</div>
+      <div class="section-subtitle">${state.notiCount} ยังไม่ได้อ่าน</div></div>
+      <button class="btn btn-secondary btn-sm" onclick="markAllRead()">อ่านทั้งหมด ✓</button>
+    </div>
+    <div id="noti-list">
+      ${notis.length ? notis.map(n => `
+        <div class="noti-item ${n.isRead?'':'unread'}" id="noti-${n.notiId}">
+          <div class="noti-dot" style="opacity:${n.isRead?0:1}"></div>
+          <div class="noti-content">
+            <div class="noti-message">${n.message}</div>
+            <div class="noti-time">${timeAgo(n.createdAt)} • <span class="badge badge-gray" style="font-size:10px">${{info:'ℹ️',success:'✅',achievement:'🏆',admin:'👑',system:'⚙️'}[n.type]||'🔔'} ${n.type}</span></div>
+          </div>
+          ${!n.isRead ? `<button class="btn btn-ghost btn-sm" onclick="markRead('${n.notiId}')">อ่านแล้ว</button>` : ''}
+        </div>
+      `).join('') : '<div class="empty-state"><span class="empty-state-icon">🔔</span><h3>ไม่มีการแจ้งเตือน</h3><p>ออกกำลังกายและระบบจะแจ้งเตือนที่นี่</p></div>'}
+    </div>
+  `;
+}
+
+window.markRead = async (notiId) => {
+  await apiPost('markNotificationRead', { notiId });
+  document.getElementById(`noti-${notiId}`)?.classList.remove('unread');
+};
+
+window.markAllRead = async () => {
+  await apiPost('markAllNotificationsRead', {});
+  await renderNotifications(document.getElementById('page-content'));
+};
+
+async function loadNotificationCount() {
+  try {
+    const r = await apiGet('getNotifications');
+    state.notiCount = (r.data||[]).filter(n=>!n.isRead).length;
+    renderNav();
+  } catch(e) {}
+}
+
+// ============================================================
+// PROFILE PAGE
+// ============================================================
+async function renderProfile(el) {
+  const [profRes, metricsRes] = await Promise.all([
+    apiGet('getUserProfile'),
+    apiGet('getBodyMetrics'),
+  ]);
+  const p = profRes.data || state.user || {};
+  const metrics = metricsRes.data || [];
+  const initials = (p.fullName||'?').split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase();
+
+  const themes = [
+    { id:'midnight-onyx',      name:'Midnight Onyx',      bg:'#0a0a0f',   accent:'#c9a84c' },
+    { id:'rose-quartz',        name:'Rose Quartz',         bg:'#fdf0f3',   accent:'#e8668a' },
+    { id:'emerald-executive',  name:'Emerald Executive',   bg:'#071510',   accent:'#c9a84c' },
+    { id:'ocean-glass',        name:'Ocean Glass',         bg:'#0d2137',   accent:'#4dd9e8' },
+    { id:'sand-stone',         name:'Sand & Stone',        bg:'#f5f0e8',   accent:'#b59a78' },
+    { id:'royal-violet',       name:'Royal Violet',        bg:'#0d0818',   accent:'#c0c0d8' },
+    { id:'sunset-coral',       name:'Sunset Coral',        bg:'#120808',   accent:'#ff7b54' },
+    { id:'pure-mono',          name:'Pure Mono',           bg:'#f8f8f8',   accent:'#111111' },
+    { id:'lavender-mist',      name:'Lavender Mist',       bg:'#f0eef8',   accent:'#9b8ec4' },
+    { id:'graphite-neon',      name:'Graphite Neon',       bg:'#101014',   accent:'#00f5d4' },
+  ];
+
+  const allowSwitch = await _getSetting('allow_user_theme_switch');
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div class="section-title">โปรไฟล์ 👤</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="profile-header">
+        <div class="profile-avatar-big">${initials}</div>
+        <div>
+          <div style="font-size:22px;font-weight:700">${p.fullName||'—'}</div>
+          <div style="color:var(--text2);font-size:14px">@${p.username}</div>
+          <div style="margin-top:8px">
+            <span class="badge badge-${p.role==='admin'?'info':'success'}">${p.role==='admin'?'👑 ผู้ดูแลระบบ':'💪 สมาชิก'}</span>
+            <span class="badge badge-gray" style="margin-left:6px">สมาชิกตั้งแต่ ${p.createdAt?.split('T')[0]||'—'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label class="form-label required">ชื่อ-นามสกุล</label>
+          <input id="prof-fullname" class="form-control" value="${p.fullName||''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">เพศ</label>
+          <select id="prof-gender" class="form-control">
+            <option value="">เลือก</option>
+            <option value="male" ${p.gender==='male'?'selected':''}>ชาย</option>
+            <option value="female" ${p.gender==='female'?'selected':''}>หญิง</option>
+            <option value="other" ${p.gender==='other'?'selected':''}>อื่นๆ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">อายุ</label>
+          <input id="prof-age" class="form-control" type="number" value="${p.age||''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">เบอร์โทร</label>
+          <input id="prof-phone" class="form-control" type="tel" value="${p.phone||''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">LINE User ID</label>
+          <input id="prof-line" class="form-control" value="${p.lineUserId||''}" placeholder="Uxxxxxxxx..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">รหัสผ่านใหม่ (ถ้าต้องการเปลี่ยน)</label>
+          <div class="input-group">
+            <input id="prof-password" class="form-control" type="password" placeholder="อย่างน้อย 6 ตัวอักษร" />
+            <button class="input-group-append" type="button" onclick="togglePassword('prof-password',this)">👁</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveProfile()">💾 บันทึกข้อมูล</button>
+    </div>
+
+    <!-- Body Metrics -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><div class="card-title"><span class="card-title-icon">⚖️</span>ข้อมูลร่างกาย</div></div>
+      <div class="metric-row" style="margin-bottom:16px">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">น้ำหนัก (kg)</label>
+          <input id="met-weight" class="form-control" type="number" step="0.1" placeholder="เช่น 70.5" />
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">รอบเอว (cm)</label>
+          <input id="met-waist" class="form-control" type="number" placeholder="เช่น 80" />
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">รอบอก (cm)</label>
+          <input id="met-chest" class="form-control" type="number" placeholder="เช่น 96" />
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">รอบแขน (cm)</label>
+          <input id="met-arm" class="form-control" type="number" placeholder="เช่น 33" />
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="saveMetrics()">📊 บันทึกข้อมูลร่างกาย</button>
+
+      ${metrics.length > 1 ? `
+        <div style="margin-top:20px">
+          <div class="chart-container-sm"><canvas id="metrics-chart"></canvas></div>
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- Theme Picker -->
+    ${allowSwitch === 'true' || p.role === 'admin' ? `
+      <div class="card">
+        <div class="card-header"><div class="card-title"><span class="card-title-icon">🎨</span>เลือกธีม</div></div>
+        <div class="theme-grid">
+          ${themes.map(t => `
+            <div class="theme-option ${(p.theme||'midnight-onyx')===t.id?'selected':''}" id="theme-opt-${t.id}" onclick="selectTheme('${t.id}')">
+              <div class="theme-preview" style="background:${t.bg}">
+                <div class="theme-preview-bar" style="background:${t.accent}"></div>
+              </div>
+              <div class="theme-name" style="background:${t.bg};color:${t.accent}">${t.name}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
+  `;
+
+  if (metrics.length > 1) {
+    const ctx = document.getElementById('metrics-chart');
+    if (ctx) {
+      state.charts.metrics = new Chart(ctx, {
+        type:'line',
+        data:{ labels: metrics.map(m=>m.date.slice(5)),
+          datasets:[
+            { label:'น้ำหนัก', data:metrics.map(m=>parseFloat(m.weight)||null), borderColor:'rgba(var(--accent-rgb),1)', tension:.4, fill:false },
+            { label:'รอบเอว', data:metrics.map(m=>parseFloat(m.waistCm)||null), borderColor:'#60a5fa', tension:.4, fill:false },
+          ]
+        },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ color:'var(--text2)' } } },
+          scales:{ x:{ grid:{display:false}, ticks:{color:'var(--text2)',font:{size:10}} },
+            y:{ grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{color:'var(--text2)'} } }
+        }
+      });
+    }
+  }
+}
+
+window.saveProfile = async () => {
+  const data = {
+    fullName:    document.getElementById('prof-fullname')?.value?.trim(),
+    gender:      document.getElementById('prof-gender')?.value,
+    age:         document.getElementById('prof-age')?.value,
+    phone:       document.getElementById('prof-phone')?.value?.trim(),
+    lineUserId:  document.getElementById('prof-line')?.value?.trim(),
+    newPassword: document.getElementById('prof-password')?.value,
+  };
+  if (!data.fullName) { toast('กรุณากรอกชื่อ', 'error'); return; }
+  const r = await apiPost('updateUserProfile', data);
+  if (r.success) { toast('บันทึกข้อมูลเรียบร้อย ✅', 'success'); }
+  else toast(r.message, 'error');
+};
+
+window.saveMetrics = async () => {
+  const data = {
+    weight:  document.getElementById('met-weight')?.value,
+    waistCm: document.getElementById('met-waist')?.value,
+    chestCm: document.getElementById('met-chest')?.value,
+    armCm:   document.getElementById('met-arm')?.value,
+  };
+  const r = await apiPost('logBodyMetrics', data);
+  if (r.success) { toast('บันทึกข้อมูลร่างกายเรียบร้อย ✅', 'success'); await renderProfile(document.getElementById('page-content')); }
+  else toast(r.message, 'error');
+};
+
+window.selectTheme = async (themeId) => {
+  applyTheme(themeId);
+  document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById(`theme-opt-${themeId}`)?.classList.add('selected');
+  const r = await apiPost('updateUserTheme', { theme: themeId });
+  if (r.success) {
+    if (state.user) { state.user.theme = themeId; localStorage.setItem('fitmate_user', JSON.stringify(state.user)); }
+    toast('เปลี่ยนธีมเรียบร้อย 🎨', 'success');
+  }
+};
+
+// ============================================================
+// SETTINGS PAGE (Auto-rendered from API)
+// ============================================================
+async function renderSettings(el) {
+  if (state.user?.role !== 'admin') {
+    el.innerHTML = `<div class="empty-state"><span class="empty-state-icon">🔒</span><h3>ไม่มีสิทธิ์เข้าถึง</h3><p>เฉพาะผู้ดูแลระบบเท่านั้น</p></div>`;
+    return;
+  }
+
+  const r = await apiGet('getSettings');
+  const settings = r.data || {};
+
+  const catNames = {
+    notification: '🔔 การแจ้งเตือน',
+    ai:           '🤖 AI / การวิเคราะห์ภาพ',
+    plan:         '🏋️ ค่าพื้นฐานแผนออกกำลังกาย',
+    appearance:   '🎨 รูปลักษณ์ระบบ',
+    member:       '👤 ระบบสมาชิก',
+  };
+
+  const catOrder = ['notification','ai','plan','appearance','member'];
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">ตั้งค่าระบบ ⚙️</div>
+      <div class="section-subtitle">ทุกค่าเก็บใน Google Sheet — แก้ได้ทันทีโดยไม่ต้อง deploy ใหม่</div></div>
+    </div>
+    <div class="tabs" id="settings-tabs">
+      ${catOrder.filter(c => settings[c]).map((c,i) => `
+        <button class="tab-btn ${i===0?'active':''}" onclick="switchSettingsTab('${c}',this)">${catNames[c]||c}</button>
+      `).join('')}
+    </div>
+    <div id="settings-body"></div>
+  `;
+
+  const firstCat = catOrder.find(c => settings[c]);
+  if (firstCat) renderSettingsCategory(firstCat, settings[firstCat]);
+}
+
+window.switchSettingsTab = (cat, btn) => {
+  document.querySelectorAll('#settings-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn?.classList.add('active');
+  const r = window._cachedSettings?.[cat];
+  if (r) renderSettingsCategory(cat, r);
+};
+
+function renderSettingsCategory(cat, items) {
+  if (!window._cachedSettings) window._cachedSettings = {};
+  window._cachedSettings[cat] = items;
+
+  const catIcons = { notification:'🔔', ai:'🤖', plan:'🏋️', appearance:'🎨', member:'👤' };
+  const el = document.getElementById('settings-body');
+  if (!el) return;
+
+  el.innerHTML = `
+    <div class="card settings-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div class="settings-section-title">${catIcons[cat]||'⚙'} การตั้งค่า</div>
+        ${cat === 'notification' ? `<button class="btn btn-secondary btn-sm" onclick="testLine()">📱 ทดสอบ LINE</button>` : ''}
+      </div>
+      ${items.map(item => renderSettingItem(item)).join('')}
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-primary" onclick="saveSettings('${cat}')">💾 บันทึกการตั้งค่า</button>
+        <button class="btn btn-secondary" onclick="renderSettings(document.getElementById('page-content'))">↺ รีโหลด</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderSettingItem(item) {
+  const inputId = `setting-${item.key}`;
+  let control = '';
+
+  if (item.inputType === 'toggle') {
+    control = `
+      <label class="toggle">
+        <input type="checkbox" id="${inputId}" ${item.value==='true'?'checked':''} />
+        <span class="toggle-slider"></span>
+      </label>`;
+  } else if (item.inputType?.startsWith('select:')) {
+    const opts = item.inputType.split(':')[1].split(',');
+    control = `
+      <select id="${inputId}" class="form-control" style="min-width:160px">
+        ${opts.map(o=>`<option value="${o}" ${item.value===o?'selected':''}>${o}</option>`).join('')}
+      </select>`;
+  } else if (item.inputType === 'password') {
+    control = `
+      <div class="input-group" style="min-width:200px">
+        <input type="password" id="${inputId}" class="form-control"
+          placeholder="${item.hasValue?'••••••••':'(ยังไม่ได้ตั้งค่า)'}"
+          autocomplete="new-password" />
+        <button class="input-group-append" type="button" onclick="togglePassword('${inputId}',this)">👁</button>
+      </div>`;
+  } else if (item.inputType === 'number') {
+    control = `<input type="number" id="${inputId}" class="form-control" value="${item.value}" style="width:120px" />`;
+  } else if (item.inputType === 'time') {
+    control = `<input type="time" id="${inputId}" class="form-control" value="${item.value}" style="width:120px" />`;
+  } else {
+    control = `<input type="text" id="${inputId}" class="form-control" value="${item.value}" style="min-width:200px" placeholder="${item.hasValue?item.value:'(ว่าง)'}" />`;
+  }
+
+  return `
+    <div class="setting-item">
+      <div class="setting-info">
+        <div class="setting-label">${item.label}</div>
+        <div class="setting-desc">${item.description}</div>
+      </div>
+      <div class="setting-control">${control}</div>
+    </div>`;
+}
+
+window.saveSettings = async (cat) => {
+  const items = window._cachedSettings?.[cat] || [];
+  const settings = items.map(item => {
+    const el  = document.getElementById(`setting-${item.key}`);
+    let value = '';
+    if (item.inputType === 'toggle') value = el?.checked ? 'true' : 'false';
+    else value = el?.value || '';
+    return { key: item.key, value };
+  });
+
+  try {
+    const r = await apiPost('updateSettings', { settings });
+    toast(r.message || 'บันทึกการตั้งค่าเรียบร้อย ✅', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+window.testLine = async () => {
+  const btn = event?.target;
+  if (btn) { btn.textContent = '⏳ กำลังส่ง...'; btn.disabled = true; }
+  try {
+    const r = await apiPost('testLineNotify', {});
+    toast(r.message || (r.success ? 'ส่งสำเร็จ!' : 'ส่งไม่สำเร็จ'), r.success ? 'success' : 'error');
+  } catch(e) { toast(e.message, 'error'); }
+  finally { if (btn) { btn.textContent = '📱 ทดสอบ LINE'; btn.disabled = false; } }
+};
+
+async function _getSetting(key) {
+  try {
+    const r = await apiGet('getSettings');
+    for (const cat of Object.values(r.data||{})) {
+      for (const item of cat) { if (item.key === key) return item.value; }
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ============================================================
+// ADMIN PANEL
+// ============================================================
+async function renderAdmin(el) {
+  if (state.user?.role !== 'admin') {
+    el.innerHTML = `<div class="empty-state"><span class="empty-state-icon">🔒</span><h3>ไม่มีสิทธิ์เข้าถึง</h3></div>`;
+    return;
+  }
+
+  const [overviewRes, pendingRes, usersRes] = await Promise.all([
+    apiGet('getSystemOverview'),
+    apiGet('getPendingApprovals'),
+    apiGet('getAllUsers'),
+  ]);
+
+  const ov      = overviewRes.data || {};
+  const pending = pendingRes.data  || [];
+  const users   = usersRes.data    || [];
+
+  el.innerHTML = `
+    <div class="section-header">
+      <div><div class="section-title">Admin Panel 🛡️</div></div>
+      <button class="btn btn-primary btn-sm" onclick="navigate('settings')">⚙️ ตั้งค่าระบบ</button>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="stat-grid" style="margin-bottom:24px">
+      <div class="stat-card">
+        <div class="stat-value">${ov.members?.total||0}</div>
+        <div class="stat-label">👥 สมาชิกทั้งหมด</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--partial)">${ov.members?.pending||0}</div>
+        <div class="stat-label">⏳ รออนุมัติ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${ov.activePlans||0}</div>
+        <div class="stat-label">📋 แผน Active</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${ov.weeklyStats?.rate||0}%</div>
+        <div class="stat-label">📊 Success Rate (7 วัน)</div>
+      </div>
+    </div>
+
+    <div class="tabs" id="admin-tabs">
+      <button class="tab-btn active" onclick="switchAdminTab('pending',this)">⏳ รออนุมัติ ${pending.length>0?`<span class="nav-badge" style="margin-left:4px">${pending.length}</span>`:''}</button>
+      <button class="tab-btn" onclick="switchAdminTab('members',this)">👥 สมาชิกทั้งหมด</button>
+      <button class="tab-btn" onclick="switchAdminTab('logs',this)">📜 Admin Logs</button>
+    </div>
+    <div id="admin-tab-content"></div>
+  `;
+
+  window._pendingData = pending;
+  window._usersData   = users;
+  renderAdminTab('pending', pending, users);
+}
+
+window.switchAdminTab = (tab, btn) => {
+  document.querySelectorAll('#admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn?.classList.add('active');
+  renderAdminTab(tab, window._pendingData, window._usersData);
+};
+
+function renderAdminTab(tab, pending, users) {
+  const el = document.getElementById('admin-tab-content');
+
+  if (tab === 'pending') {
+    el.innerHTML = pending.length ? `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ผู้ใช้</th><th>เพศ / อายุ</th><th>เบอร์โทร</th><th>วันที่สมัคร</th><th>การดำเนินการ</th></tr></thead>
+          <tbody>
+            ${pending.map(u => `
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div class="user-row-avatar">${(u.fullName||u.username||'?')[0].toUpperCase()}</div>
+                    <div>
+                      <div style="font-weight:600">${u.fullName||u.username}</div>
+                      <div style="font-size:12px;color:var(--text2)">@${u.username}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>${{male:'ชาย',female:'หญิง',other:'อื่นๆ'}[u.gender]||'—'} ${u.age?'/ '+u.age+' ปี':''}</td>
+                <td>${u.phone||'—'}</td>
+                <td style="font-size:12px">${u.createdAt?.split('T')[0]||'—'}</td>
+                <td>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <button class="btn btn-success btn-sm" onclick="adminAction('approve','${u.userId}','${u.fullName||u.username}')">✅ อนุมัติ</button>
+                    <button class="btn btn-danger btn-sm" onclick="adminAction('reject','${u.userId}','${u.fullName||u.username}')">❌ ปฏิเสธ</button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    ` : '<div class="empty-state" style="padding:32px"><span class="empty-state-icon">✅</span><h3>ไม่มีรายการรออนุมัติ</h3></div>';
+
+  } else if (tab === 'members') {
+    el.innerHTML = `
+      <div style="margin-bottom:12px">
+        <input id="user-search" class="form-control" placeholder="🔍 ค้นหาสมาชิก..." oninput="filterUsers(this.value)" />
+      </div>
+      <div class="table-wrap">
+        <table id="users-table">
+          <thead><tr><th>ผู้ใช้</th><th>Role</th><th>สถานะ</th><th>เพศ / อายุ</th><th>เบอร์โทร</th><th>วันที่สมัคร</th><th>การดำเนินการ</th></tr></thead>
+          <tbody>
+            ${users.filter(u=>u.role!=='admin'||true).map(u => `
+              <tr class="user-row" data-search="${(u.fullName||'').toLowerCase()} ${(u.username||'').toLowerCase()}">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div class="user-row-avatar">${(u.fullName||u.username||'?')[0].toUpperCase()}</div>
+                    <div>
+                      <div style="font-weight:600">${u.fullName||u.username}</div>
+                      <div style="font-size:12px;color:var(--text2)">@${u.username}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge badge-${u.role==='admin'?'info':'gray'}">${u.role==='admin'?'👑 Admin':'💪 Member'}</span></td>
+                <td><span class="badge badge-${u.status==='approved'?'success':u.status==='pending'?'warning':'danger'}">${{approved:'✅ อนุมัติ',pending:'⏳ รอ',rejected:'❌ ปฏิเสธ',suspended:'🚫 ระงับ'}[u.status]||u.status}</span></td>
+                <td>${{male:'ชาย',female:'หญิง',other:'อื่นๆ'}[u.gender]||'—'} ${u.age?'/ '+u.age+' ปี':''}</td>
+                <td style="font-size:13px">${u.phone||'—'}</td>
+                <td style="font-size:12px;color:var(--text2)">${u.createdAt?.split('T')[0]||'—'}</td>
+                <td>
+                  ${u.role!=='admin' ? `
+                    <div style="display:flex;gap:4px;flex-wrap:wrap">
+                      ${u.status!=='approved' ? `<button class="btn btn-success btn-sm" onclick="adminAction('approve','${u.userId}','${u.fullName}')">✅</button>` : ''}
+                      ${u.status!=='suspended' ? `<button class="btn btn-danger btn-sm" onclick="adminAction('suspend','${u.userId}','${u.fullName}')">🚫</button>` : ''}
+                      <button class="btn btn-danger btn-sm" onclick="adminAction('delete','${u.userId}','${u.fullName}')">🗑</button>
+                    </div>
+                  ` : '<span style="color:var(--text3);font-size:12px">—</span>'}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } else { // logs
+    loadAdminLogs(el);
+  }
+}
+
+window.filterUsers = (q) => {
+  document.querySelectorAll('.user-row').forEach(row => {
+    row.style.display = row.dataset.search?.includes(q.toLowerCase()) ? '' : 'none';
+  });
+};
+
+async function loadAdminLogs(el) {
+  el.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  const r = await apiGet('getAdminLogs');
+  const logs = r.data || [];
+  el.innerHTML = logs.length ? `
+    <div class="table-wrap"><table>
+      <thead><tr><th>เวลา</th><th>Admin</th><th>Action</th><th>เป้าหมาย</th></tr></thead>
+      <tbody>
+        ${logs.slice(0,50).map(l=>`
+          <tr>
+            <td style="font-size:12px;color:var(--text2)">${l.timestamp?.replace('T',' ')?.split('.')[0]||'—'}</td>
+            <td>${l.adminId}</td>
+            <td><span class="badge badge-info">${l.action}</span></td>
+            <td style="font-size:13px">${l.targetUserId||'—'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table></div>
+  ` : '<div class="empty-state" style="padding:32px"><span class="empty-state-icon">📜</span><h3>ยังไม่มี Log</h3></div>';
+}
+
+window.adminAction = async (action, userId, name) => {
+  const confirmMsg = {
+    approve: `อนุมัติบัญชีของ "${name}"?`,
+    reject:  `ปฏิเสธบัญชีของ "${name}"?`,
+    suspend: `ระงับบัญชีของ "${name}"?`,
+    delete:  `⚠️ ลบบัญชีของ "${name}" ถาวร? ไม่สามารถกู้คืนได้`,
+  };
+  if (!confirm(confirmMsg[action]||action)) return;
+
+  const actionMap = { approve:'approveUser', reject:'rejectUser', suspend:'suspendUser', delete:'deleteUser' };
+  const r = await apiPost(actionMap[action], { userId });
+  if (r.success) { toast(r.message, 'success'); await renderAdmin(document.getElementById('page-content')); }
+  else toast(r.message, 'error');
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+function timeAgo(iso) {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'เมื่อกี้';
+  if (m < 60) return `${m} นาทีที่แล้ว`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} ชั่วโมงที่แล้ว`;
+  return `${Math.floor(h/24)} วันที่แล้ว`;
+}
+
+function toast(msg, type='info') {
+  const el = document.getElementById('toast-container');
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  el.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(40px)'; t.style.transition='all .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+
+function openModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// Auto-cache settings from API when first loaded (for theme check)
+window._cachedSettings = null;
+apiGet('getSettings').then(r => {
+  window._cachedSettings = r.data || {};
+}).catch(()=>{});
+</script>
+</body>
+</html>
