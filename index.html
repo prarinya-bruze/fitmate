@@ -865,7 +865,7 @@ window.checkAiStatus = async () => {
   if (!el) return;
   try {
     const r = await apiPost('testAiConnection');
-    if (r.status === 'success') {
+    if (r.success) {
       el.innerHTML = '<span style="color:#00e676">●</span> Online';
     } else {
       el.innerHTML = '<span style="color:#ff3366">●</span> Error';
@@ -881,7 +881,7 @@ window.testAi = async () => {
   if (btn) { btn.textContent = '⏳ กำลังเช็ค...'; btn.disabled = true; }
   try {
     const r = await apiPost('testAiConnection');
-    if (r.status === 'success') {
+    if (r.success) {
       toast('✅ การเชื่อมต่อ AI สมบูรณ์', 'success');
       window.checkAiStatus();
     } else {
