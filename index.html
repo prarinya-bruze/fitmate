@@ -703,13 +703,7 @@ tr:hover td{background:var(--surface2)}
   .theme-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
 }
 
-/* API Setup Banner */
-#api-banner{
-  background:rgba(251,191,36,.1);border-bottom:1px solid rgba(251,191,36,.3);
-  padding:10px 24px;display:flex;align-items:center;gap:12px;
-  font-size:13px;font-weight:500;
-}
-#api-banner.hidden{display:none}
+
 
 /* Skeleton loader */
 .skeleton{
@@ -781,11 +775,7 @@ tr:hover td{background:var(--surface2)}
 
   <!-- Main area -->
   <div id="main">
-    <!-- API Banner -->
-    <div id="api-banner" class="hidden">
-      ⚠️ ยังไม่ได้ตั้งค่า API URL —
-      <button class="btn btn-sm btn-primary" onclick="promptApiUrl()">ตั้งค่าเลย</button>
-    </div>
+
     <!-- Top Bar -->
     <div id="top-bar">
       <div style="display:flex;align-items:center;gap:12px">
@@ -811,9 +801,9 @@ tr:hover td{background:var(--surface2)}
 
 <script>
 // ============================================================
-// CONFIG — แก้ไข API_URL หลัง deploy GAS Web App
+// CONFIG — ลิงก์ API URL จากการ Deploy
 // ============================================================
-let API_URL = localStorage.getItem('fitmate_api_url') || '';
+const API_URL = 'https://script.google.com/macros/s/AKfycby8pKO62jb04_nO5ZTXT3CCBSBdZyk4i2kG0l5PQhT7NNejdWp4CJ43QoKHYfO0ifKQ/exec';
 
 function applyTheme(theme) {
   const t = theme || 'pure-mono';
@@ -906,7 +896,6 @@ const state = {
 // API LAYER
 // ============================================================
 async function api(action, params={}, method='GET') {
-  if (!API_URL) { showApiSetup(); throw new Error('ไม่มี API URL'); }
   let url, opts;
   if (method === 'GET') {
     const q = new URLSearchParams({ action, token: state.token, ...params });
@@ -932,9 +921,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('fitmate_theme') || 'pure-mono';
   applyTheme(savedTheme);
 
-  if (!API_URL) {
-    document.getElementById('api-banner').classList.remove('hidden');
-  }
   if (state.token && state.user) {
     // Prefer localStorage theme, then user.theme from DB
     const theme = localStorage.getItem('fitmate_theme') || state.user.theme || 'pure-mono';
@@ -952,45 +938,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function showApiSetup() {
-  document.getElementById('api-banner').classList.remove('hidden');
-}
 
-function promptApiUrl() {
-  openModal(`
-    <div class="modal-header">
-      <div class="modal-title">⚙️ ตั้งค่า API URL</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="color:var(--text2);font-size:14px;margin-bottom:20px">
-        วาง URL ของ Google Apps Script Web App ที่ Deploy แล้ว<br>
-        <small style="color:var(--text3)">ตัวอย่าง: https://script.google.com/macros/s/AKf.../exec</small>
-      </p>
-      <div class="form-group">
-        <label class="form-label">Web App URL</label>
-        <input id="api-url-input" class="form-control" type="url"
-          placeholder="https://script.google.com/macros/s/.../exec"
-          value="${API_URL}" />
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveApiUrl()">บันทึก</button>
-        <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
-      </div>
-    </div>
-  `);
-}
-
-function saveApiUrl() {
-  const v = document.getElementById('api-url-input')?.value?.trim();
-  if (!v) { toast('กรุณากรอก URL', 'error'); return; }
-  API_URL = v;
-  localStorage.setItem('fitmate_api_url', v);
-  document.getElementById('api-banner').classList.add('hidden');
-  closeModal();
-  toast('บันทึก API URL เรียบร้อย ✅', 'success');
-  if (!state.token && document.getElementById('auth-page').style.display !== 'none') { renderLoginForm(); }
-}
 
 // ============================================================
 // THEME — defined earlier near line 818
@@ -1041,9 +989,7 @@ function renderNav() {
     ${isAdmin ? `
     <div style="margin-top:16px">
       <div class="sidebar-section-label">การตั้งค่าระบบ</div>
-      <button class="nav-item" onclick="promptApiUrl()">
-        <span class="nav-icon">🔗</span><span>ตั้งค่า API URL</span>
-      </button>
+
       <div class="nav-item" style="cursor:default;padding-right:16px;display:flex;justify-content:space-between;margin-top:8px;">
         <div><span class="nav-icon">🤖</span><span>AI Status</span></div>
         <span id="ai-status-indicator" style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)">กำลังเช็ค...</span>
@@ -1137,8 +1083,6 @@ function showApp() {
 
 function renderLoginForm() {
   document.getElementById('auth-card-inner').innerHTML = `
-    <button onclick="promptApiUrl()" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:20px;opacity:0.5;transition:0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5" title="ตั้งค่า API URL">⚙️</button>
-    ${!API_URL ? `<div style="background:var(--danger-alpha);color:var(--danger);padding:12px;border-radius:var(--radius-sm);margin-bottom:16px;text-align:center;font-size:14px;border:1px solid var(--danger)">⚠️ ไม่มี API URL กรุณาตั้งค่าก่อน</div>` : ''}
     <div class="auth-logo">
       <div class="auth-logo-icon">🏋️</div>
       <div class="auth-logo-name">FITMATE</div>
@@ -1966,7 +1910,7 @@ function renderPlanResult(plan) {
       </details>
 
       <div style="display:flex;gap:10px">
-        <button class="btn btn-primary" style="flex:1" onclick="savePlanDraft()">💾 บันทึกแผน</button>
+        <button class="btn btn-primary" style="flex:1" onclick="savePlanDraft(this)">💾 บันทึกแผน</button>
         <button class="btn btn-secondary" onclick="renderUpload(document.getElementById('page-content'))">↩ วิเคราะห์ใหม่</button>
       </div>
     </div>
@@ -1974,8 +1918,10 @@ function renderPlanResult(plan) {
   window._currentPlan = plan;
 }
 
-window.savePlanDraft = async () => {
+window.savePlanDraft = async (btn) => {
   if (!window._currentPlan) return;
+  const oldText = btn ? btn.textContent : '💾 บันทึกแผน';
+  if (btn) { btn.textContent = '⏳ กำลังบันทึก...'; btn.disabled = true; }
   const plan = {
     ...window._currentPlan,
     planName:  document.getElementById('plan-name-input')?.value || window._currentPlan.planName,
@@ -1986,7 +1932,11 @@ window.savePlanDraft = async () => {
     const r = await apiPost('savePlanDraft', { planJson: plan });
     if (r.success) { toast('บันทึกแผนร่างสำเร็จ! ไปตรวจสอบได้เลย 📋', 'success'); navigate('plan-review'); }
     else toast(r.message, 'error');
-  } catch(e) { toast(e.message, 'error'); }
+  } catch(e) { 
+    toast(e.message, 'error'); 
+  } finally {
+    if (btn) { btn.textContent = oldText; btn.disabled = false; }
+  }
 };
 
 // ============================================================
