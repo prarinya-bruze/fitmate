@@ -2407,6 +2407,9 @@ async function renderSettings(el) {
 
   const r = await apiGet('getSettings');
   const settings = r.data || {};
+  
+  // Cache settings so tabs can access them
+  window._cachedSettings = settings;
 
   const catNames = {
     notification: '🔔 การแจ้งเตือน',
