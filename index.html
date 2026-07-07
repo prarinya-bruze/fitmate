@@ -815,6 +815,12 @@ tr:hover td{background:var(--surface2)}
 // ============================================================
 let API_URL = localStorage.getItem('fitmate_api_url') || '';
 
+function applyTheme(theme) {
+  const t = theme || 'pure-mono';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('fitmate_theme', t);
+}
+
 // ============================================================
 // STATE
 // ============================================================
@@ -834,20 +840,26 @@ const THEMES = [
 
 function getThemeSelectorHTML(currentTheme) {
   return `
-    <div style="display:flex;gap:12px;overflow-x:auto;padding:8px 4px;scrollbar-width:none">
+    <div style="display:flex;gap:12px;overflow-x:auto;padding:8px 4px;scrollbar-width:none;justify-content:center;">
       ${THEMES.map(t => `
         <button class="theme-option ${currentTheme===t.id?'active':''}" id="theme-${t.id}" 
                 onclick="changeTheme('${t.id}')"
-                style="background:${t.bg};flex-shrink:0" title="${t.name}">
-          <div class="theme-color" style="background:${t.accent}"></div>
+                style="width:28px;height:28px;border-radius:50%;background:${t.bg};flex-shrink:0;position:relative;border:2px solid ${currentTheme===t.id?'var(--accent)':'transparent'};padding:0;box-shadow:0 2px 4px rgba(0,0,0,0.1);" title="${t.name}">
+          <div style="width:12px;height:12px;border-radius:50%;background:${t.accent};position:absolute;bottom:2px;right:2px;"></div>
         </button>
       `).join('')}
     </div>
   `;
 }
 
-
-
+window.changeTheme = async (t) => {
+  applyTheme(t);
+  document.querySelectorAll('.theme-option').forEach(el=>el.style.borderColor='transparent');
+  document.querySelectorAll('#theme-'+t).forEach(el=>el.style.borderColor='var(--accent)');
+  if (state && state.user) {
+    try { await apiPost('updateUserTheme', {theme:t}); } catch(e){}
+  }
+};
 window.checkAiStatus = async () => {
   const el = document.getElementById('ai-status-indicator');
   if (!el) return;
