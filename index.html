@@ -818,6 +818,67 @@ let API_URL = localStorage.getItem('fitmate_api_url') || '';
 // ============================================================
 // STATE
 // ============================================================
+
+const THEMES = [
+  { id:'midnight-onyx',      name:'Midnight Onyx',      bg:'#0a0a0f',   accent:'#c9a84c' },
+  { id:'rose-quartz',        name:'Rose Quartz',         bg:'#fdf0f3',   accent:'#e8668a' },
+  { id:'emerald-executive',  name:'Emerald Executive',   bg:'#071510',   accent:'#c9a84c' },
+  { id:'ocean-glass',        name:'Ocean Glass',         bg:'#0d2137',   accent:'#4dd9e8' },
+  { id:'sand-stone',         name:'Sand & Stone',        bg:'#f5f0e8',   accent:'#b59a78' },
+  { id:'royal-violet',       name:'Royal Violet',        bg:'#0d0818',   accent:'#c0c0d8' },
+  { id:'sunset-coral',       name:'Sunset Coral',        bg:'#120808',   accent:'#ff7b54' },
+  { id:'pure-mono',          name:'Pure Mono',           bg:'#f8f8f8',   accent:'#111111' },
+  { id:'lavender-mist',      name:'Lavender Mist',       bg:'#f0eef8',   accent:'#9b8ec4' },
+  { id:'graphite-neon',      name:'Graphite Neon',       bg:'#101014',   accent:'#00f5d4' },
+];
+
+function getThemeSelectorHTML(currentTheme) {
+  return `
+    <div style="display:flex;gap:12px;overflow-x:auto;padding:8px 4px;scrollbar-width:none">
+      ${THEMES.map(t => `
+        <button class="theme-option ${currentTheme===t.id?'active':''}" id="theme-${t.id}" 
+                onclick="changeTheme('${t.id}')"
+                style="background:${t.bg};flex-shrink:0" title="${t.name}">
+          <div class="theme-color" style="background:${t.accent}"></div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+
+
+window.checkAiStatus = async () => {
+  const el = document.getElementById('ai-status-indicator');
+  if (!el) return;
+  try {
+    const r = await apiPost('testAiConnection');
+    if (r.status === 'success') {
+      el.innerHTML = '<span style="color:#00e676">●</span> Online';
+    } else {
+      el.innerHTML = '<span style="color:#ff3366">●</span> Error';
+      el.title = r.message;
+    }
+  } catch(e) {
+    el.innerHTML = '<span style="color:#ff3366">●</span> Error';
+  }
+};
+
+window.testAi = async () => {
+  const btn = event?.target;
+  if (btn) { btn.textContent = '⏳ กำลังเช็ค...'; btn.disabled = true; }
+  try {
+    const r = await apiPost('testAiConnection');
+    if (r.status === 'success') {
+      toast('✅ การเชื่อมต่อ AI สมบูรณ์', 'success');
+      window.checkAiStatus();
+    } else {
+      toast('❌ ทดสอบไม่ผ่าน: ' + r.message, 'error');
+    }
+  } catch(e) { toast('❌ ทดสอบล้มเหลว: ' + e, 'error'); }
+  if (btn) { btn.textContent = '🤖 ทดสอบ AI'; btn.disabled = false; }
+};
+
 const state = {
   token:    localStorage.getItem('fitmate_token')  || '',
   user:     JSON.parse(localStorage.getItem('fitmate_user') || 'null'),
@@ -945,6 +1006,7 @@ function getNavItems() {
 }
 
 function renderNav() {
+  if (!window._aiStatusChecked) { window._aiStatusChecked = true; setTimeout(()=>checkAiStatus(), 1000); }
   const items   = getNavItems();
   const isAdmin = state.user?.role === 'admin';
   const sideNav = document.getElementById('sidebar-nav');
@@ -965,6 +1027,10 @@ function renderNav() {
       <button class="nav-item" onclick="promptApiUrl()">
         <span class="nav-icon">🔗</span><span>ตั้งค่า API URL</span>
       </button>
+      <div class="nav-item" style="cursor:default;padding-right:16px;display:flex;justify-content:space-between;margin-top:8px;">
+        <div><span class="nav-icon">🤖</span><span>AI Status</span></div>
+        <span id="ai-status-indicator" style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)">กำลังเช็ค...</span>
+      </div>
     </div>
   `;
 
@@ -1075,12 +1141,14 @@ function renderLoginForm() {
       ยังไม่มีบัญชี?
       <button onclick="renderRegisterForm()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;font-size:14px">สมัครสมาชิก</button>
     </div>
-    <div style="text-align:center;margin-top:8px">
-      <button onclick="promptApiUrl()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px">🔗 ตั้งค่า API URL</button>
+    <div style="text-align:center;margin-top:24px;font-size:12px;color:var(--text3);letter-spacing:0.5px">
+      Power By KukickBruze
     </div>
-    <div style="margin-top:20px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);font-size:12px;color:var(--text3)">
-      <strong>Demo:</strong> admin / admin123 &nbsp;|&nbsp; demo_member / member123
+    <div style="margin-top:20px;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px;text-align:center;">🎨 เลือกธีมที่ชอบ</div>
+      ${getThemeSelectorHTML(document.documentElement.getAttribute('data-theme'))}
     </div>
+    
   `;
   setTimeout(() => document.getElementById('login-username')?.focus(), 100);
 }
@@ -2220,18 +2288,7 @@ async function renderProfile(el) {
   const metrics = metricsRes.data || [];
   const initials = (p.fullName||'?').split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase();
 
-  const themes = [
-    { id:'midnight-onyx',      name:'Midnight Onyx',      bg:'#0a0a0f',   accent:'#c9a84c' },
-    { id:'rose-quartz',        name:'Rose Quartz',         bg:'#fdf0f3',   accent:'#e8668a' },
-    { id:'emerald-executive',  name:'Emerald Executive',   bg:'#071510',   accent:'#c9a84c' },
-    { id:'ocean-glass',        name:'Ocean Glass',         bg:'#0d2137',   accent:'#4dd9e8' },
-    { id:'sand-stone',         name:'Sand & Stone',        bg:'#f5f0e8',   accent:'#b59a78' },
-    { id:'royal-violet',       name:'Royal Violet',        bg:'#0d0818',   accent:'#c0c0d8' },
-    { id:'sunset-coral',       name:'Sunset Coral',        bg:'#120808',   accent:'#ff7b54' },
-    { id:'pure-mono',          name:'Pure Mono',           bg:'#f8f8f8',   accent:'#111111' },
-    { id:'lavender-mist',      name:'Lavender Mist',       bg:'#f0eef8',   accent:'#9b8ec4' },
-    { id:'graphite-neon',      name:'Graphite Neon',       bg:'#101014',   accent:'#00f5d4' },
-  ];
+  
 
   const allowSwitch = await _getSetting('allow_user_theme_switch');
 
@@ -2325,7 +2382,7 @@ async function renderProfile(el) {
       <div class="card">
         <div class="card-header"><div class="card-title"><span class="card-title-icon">🎨</span>เลือกธีม</div></div>
         <div class="theme-grid">
-          ${themes.map(t => `
+          ${THEMES.map(t => `
             <div class="theme-option ${(p.theme||'midnight-onyx')===t.id?'selected':''}" id="theme-opt-${t.id}" onclick="selectTheme('${t.id}')">
               <div class="theme-preview" style="background:${t.bg}">
                 <div class="theme-preview-bar" style="background:${t.accent}"></div>
@@ -2458,6 +2515,7 @@ function renderSettingsCategory(cat, items) {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div class="settings-section-title">${catIcons[cat]||'⚙'} การตั้งค่า</div>
         ${cat === 'notification' ? `<button class="btn btn-secondary btn-sm" onclick="testLine()">📱 ทดสอบ LINE</button>` : ''}
+          ${cat === 'ai' ? `<button class="btn btn-secondary btn-sm" onclick="testAi()">🤖 ทดสอบ AI</button>` : ''}
       </div>
       ${items.map(item => renderSettingItem(item)).join('')}
       <div style="display:flex;gap:10px;margin-top:20px">
@@ -2523,6 +2581,12 @@ window.saveSettings = async (cat) => {
   try {
     const r = await apiPost('updateSettings', { settings });
     toast(r.message || 'บันทึกการตั้งค่าเรียบร้อย ✅', 'success');
+    if (cat === 'appearance') {
+      const defaultTheme = settings.find(s => s.key === 'default_theme')?.value;
+      if (defaultTheme && (!state.user || !state.user.theme)) {
+         applyTheme(defaultTheme);
+      }
+    }
   } catch(e) { toast(e.message, 'error'); }
 };
 
