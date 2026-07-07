@@ -850,20 +850,21 @@ window.changeTheme = async (t) => {
     try { await apiPost('updateUserTheme', {theme:t}); } catch(e){}
   }
 };
+window._aiStatusCache = '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)">กำลังเช็ค...</span>';
+
 window.checkAiStatus = async () => {
-  const el = document.getElementById('ai-status-indicator');
-  if (!el) return;
   try {
     const r = await apiPost('testAiConnection');
     if (r.success) {
-      el.innerHTML = '<span style="color:#00e676">●</span> Online';
+      window._aiStatusCache = '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(0,230,118,0.1);color:#00e676">● Online</span>';
     } else {
-      el.innerHTML = '<span style="color:#ff3366">●</span> Error';
-      el.title = r.message;
+      window._aiStatusCache = `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,51,102,0.1);color:#ff3366" title="${r.message}">● Error</span>`;
     }
   } catch(e) {
-    el.innerHTML = '<span style="color:#ff3366">●</span> Error';
+    window._aiStatusCache = `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,51,102,0.1);color:#ff3366" title="${e.message}">● Error</span>`;
   }
+  const el = document.getElementById('ai-status-indicator-wrapper');
+  if (el) el.innerHTML = window._aiStatusCache;
 };
 
 window.testAi = async () => {
@@ -986,16 +987,13 @@ function renderNav() {
         ${i.id==='notifications' && state.notiCount>0 ? `<span class="nav-badge">${state.notiCount}</span>` : ''}
       </button>
     `).join('')}
-    ${isAdmin ? `
     <div style="margin-top:16px">
-      <div class="sidebar-section-label">การตั้งค่าระบบ</div>
-
+      <div class="sidebar-section-label">สถานะระบบ</div>
       <div class="nav-item" style="cursor:default;padding-right:16px;display:flex;justify-content:space-between;margin-top:8px;">
         <div><span class="nav-icon">🤖</span><span>AI Status</span></div>
-        <span id="ai-status-indicator" style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)">กำลังเช็ค...</span>
+        <div id="ai-status-indicator-wrapper">${window._aiStatusCache || '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--surface2);color:var(--text2)">กำลังเช็ค...</span>'}</div>
       </div>
     </div>
-    ` : ''}
   `;
 
   botNav.innerHTML = mobileItems.map(i => `
