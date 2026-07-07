@@ -928,11 +928,17 @@ async function apiPost(action, params={}) { return api(action, params, 'POST'); 
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  // Apply saved theme from localStorage first (before login check)
+  const savedTheme = localStorage.getItem('fitmate_theme') || 'pure-mono';
+  applyTheme(savedTheme);
+
   if (!API_URL) {
     document.getElementById('api-banner').classList.remove('hidden');
   }
   if (state.token && state.user) {
-    applyTheme(state.user.theme || 'midnight-onyx');
+    // Prefer localStorage theme, then user.theme from DB
+    const theme = localStorage.getItem('fitmate_theme') || state.user.theme || 'pure-mono';
+    applyTheme(theme);
     showApp();
   } else {
     showAuth();
@@ -986,12 +992,9 @@ function saveApiUrl() {
 }
 
 // ============================================================
-// THEME
+// THEME — defined earlier near line 818
 // ============================================================
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme || 'midnight-onyx');
-  localStorage.setItem('fitmate_theme', theme);
-}
+// applyTheme() is already defined above; default theme = 'pure-mono'
 
 // ============================================================
 // NAVIGATION
@@ -1121,7 +1124,9 @@ function showAuth() {
 function showApp() {
   document.getElementById('auth-page').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  applyTheme(state.user?.theme);
+  // Use theme from localStorage (set by login page picker), fallback to user.theme from DB
+  const theme = localStorage.getItem('fitmate_theme') || state.user?.theme || 'pure-mono';
+  applyTheme(theme);
   renderNav();
   loadNotificationCount();
   navigate('dashboard');
@@ -1229,7 +1234,18 @@ async function doLogin() {
     state.token = r.data.token;
     state.user  = r.data.user;
     localStorage.setItem('fitmate_token', r.data.token);
-    localStorage.setItem('fitmate_user',  JSON.stringify(r.data.user));
+    // Keep the theme that was chosen on the login page
+    const loginTheme = localStorage.getItem('fitmate_theme');
+    if (loginTheme && loginTheme !== state.user.theme) {
+      // Update user object so showApp uses correct theme
+      state.user.theme = loginTheme;
+      // Save updated user back to localStorage
+      localStorage.setItem('fitmate_user', JSON.stringify(state.user));
+      // Sync theme to server in background (don't await to avoid slowing login)
+      apiPost('updateUserTheme', { theme: loginTheme }).catch(()=>{});
+    } else {
+      localStorage.setItem('fitmate_user', JSON.stringify(state.user));
+    }
     toast(`ยินดีต้อนรับ ${state.user.fullName}! 💪`, 'success');
     showApp();
   } catch(e) { toast(e.message, 'error'); }
@@ -2518,7 +2534,7 @@ function renderSettingsCategory(cat, items) {
   if (!window._cachedSettings) window._cachedSettings = {};
   window._cachedSettings[cat] = items;
 
-  const catIcons = { notification:'🔔', ai:'🤖', plan:'🏋️', appearance:'🎨', member:'👤' };
+  const catIcons = { notification:'🔔', plan:'🏋️', appearance:'🎨', member:'👤' };
   const el = document.getElementById('settings-body');
   if (!el) return;
 
@@ -2527,8 +2543,8 @@ function renderSettingsCategory(cat, items) {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div class="settings-section-title">${catIcons[cat]||'⚙'} การตั้งค่า</div>
         ${cat === 'notification' ? `<button class="btn btn-secondary btn-sm" onclick="testLine()">📱 ทดสอบ LINE</button>` : ''}
-          ${cat === 'ai' ? `<button class="btn btn-secondary btn-sm" onclick="testAi()">🤖 ทดสอบ AI</button>` : ''}
       </div>
+      ${cat === 'ai' ? '<div id="ai-providers-container"></div>' : ''}
       ${items.map(item => renderSettingItem(item)).join('')}
       <div style="display:flex;gap:10px;margin-top:20px">
         <button class="btn btn-primary" onclick="saveSettings('${cat}')">💾 บันทึกการตั้งค่า</button>
@@ -2536,9 +2552,162 @@ function renderSettingsCategory(cat, items) {
       </div>
     </div>
   `;
+
+  if (cat === 'ai') {
+    renderAIProviders();
+  }
 }
 
+// ============================================================
+// AI PROVIDERS (FRONTEND CRUD)
+// ============================================================
+async function renderAIProviders() {
+  const el = document.getElementById('ai-providers-container');
+  if (!el) return;
+  el.innerHTML = '<div class="loader" style="margin:20px auto"><div class="spinner"></div></div>';
+  
+  try {
+    const r = await apiGet('getAIProviders');
+    const provs = r.data || [];
+    
+    el.innerHTML = `
+      <div class="section-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+        <div class="settings-section-title">🤖 จัดการ AI Providers</div>
+        <button class="btn btn-primary btn-sm" onclick="openProviderModal()">+ เพิ่ม Provider</button>
+      </div>
+      
+      <div class="stat-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        ${provs.length === 0 ? '<div class="empty-state">ยังไม่มี AI Provider กรุณาเพิ่มใหม่</div>' : 
+          provs.map(p => `
+            <div class="card stat-card" style="align-items:flex-start; text-align:left; position:relative; opacity: ${p.enabled==='true'?1:0.6}">
+              <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px">
+                <div style="font-weight:bold; font-size:16px;">${p.name} <span style="font-size:12px; font-weight:normal; color:var(--text2)">(${p.key})</span></div>
+                <div style="font-size:12px; padding:2px 8px; border-radius:10px; background:var(--bg-lighter); color:var(--text2)">Pri: ${p.priority}</div>
+              </div>
+              <div style="font-size:13px; color:var(--text2); margin-bottom:4px">Model: ${p.modelId}</div>
+              <div style="font-size:13px; color:var(--text2); margin-bottom:15px">Key: ${p.hasApiKey ? '••••••••' : 'ไม่ได้ตั้งค่า'}</div>
+              <div style="display:flex; gap:8px; width:100%">
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick='openProviderModal(${JSON.stringify(p).replace(/'/g,"&#39;")})'>✏️ แก้ไข</button>
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick="doTestProvider('${p.id}', this)">🔌 ทดสอบ</button>
+                <button class="btn btn-danger btn-sm" onclick="doDeleteProvider('${p.id}', '${p.name}')">🗑️</button>
+              </div>
+            </div>
+          `).join('')}
+      </div>
+    `;
+  } catch(e) {
+    el.innerHTML = `<div class="empty-state"><span class="empty-state-icon">⚠️</span><h3>โหลดข้อมูลล้มเหลว</h3><p>${e.message}</p></div>`;
+  }
+}
+
+window.openProviderModal = (prov = null) => {
+  const isEdit = !!prov;
+  const content = `
+    <h3>${isEdit ? 'แก้ไข AI Provider' : 'เพิ่ม AI Provider'}</h3>
+    <input type="hidden" id="prov-id" value="${prov?.id || ''}">
+    
+    <div class="form-group">
+      <label class="form-label">ค่าย (เช่น gemini, openai, deepseek)</label>
+      <input type="text" id="prov-key" class="form-control" placeholder="gemini" value="${prov?.key || ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ชื่อแสดงผล</label>
+      <input type="text" id="prov-name" class="form-control" placeholder="Google Gemini 1.5 Flash" value="${prov?.name || ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Model ID</label>
+      <input type="text" id="prov-model" class="form-control" placeholder="gemini-1.5-flash" value="${prov?.modelId || ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">API Key</label>
+      <input type="password" id="prov-apikey" class="form-control" placeholder="${prov?.hasApiKey ? '•••••••• (พิมพ์ใหม่เพื่อเปลี่ยน)' : 'ใส่ API Key'}" value="">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Base URL (ใส่เฉพาะถ้าใช้ Custom Endpoint/OpenAI Compatible)</label>
+      <input type="text" id="prov-baseurl" class="form-control" placeholder="https://api.openai.com/v1" value="${prov?.baseUrl || ''}">
+    </div>
+    <div style="display:flex; gap:10px;">
+      <div class="form-group" style="flex:1">
+        <label class="form-label">Priority (1=สำคัญสุด)</label>
+        <input type="number" id="prov-priority" class="form-control" value="${prov?.priority || 1}">
+      </div>
+      <div class="form-group" style="flex:1">
+        <label class="form-label">Temperature (0.0-1.0)</label>
+        <input type="number" step="0.1" id="prov-temp" class="form-control" value="${prov?.temperature || 0.7}">
+      </div>
+    </div>
+    <div class="form-group" style="display:flex; align-items:center; gap:10px">
+      <input type="checkbox" id="prov-enabled" ${!prov || prov.enabled==='true' ? 'checked' : ''} style="width:20px;height:20px;">
+      <label for="prov-enabled" style="margin:0;cursor:pointer">เปิดใช้งาน Provider นี้</label>
+    </div>
+    
+    <div style="display:flex; gap:10px; margin-top:20px">
+      <button class="btn btn-primary" style="flex:1" onclick="doSaveProvider(this)">บันทึก</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal()">ยกเลิก</button>
+    </div>
+  `;
+  openModal(content);
+};
+
+window.doSaveProvider = async (btn) => {
+  const data = {
+    id: document.getElementById('prov-id').value,
+    key: document.getElementById('prov-key').value.trim(),
+    name: document.getElementById('prov-name').value.trim(),
+    modelId: document.getElementById('prov-model').value.trim(),
+    apiKey: document.getElementById('prov-apikey').value.trim(),
+    baseUrl: document.getElementById('prov-baseurl').value.trim(),
+    priority: document.getElementById('prov-priority').value,
+    temperature: document.getElementById('prov-temp').value,
+    enabled: document.getElementById('prov-enabled').checked ? 'true' : 'false'
+  };
+  
+  if (!data.key || !data.name || !data.modelId) {
+    toast('กรุณากรอกข้อมูลที่จำเป็น', 'error'); return;
+  }
+  
+  btn.textContent = 'กำลังบันทึก...'; btn.disabled = true;
+  try {
+    const r = await apiPost('saveAIProvider', data);
+    if (r.success) {
+      toast(r.message, 'success');
+      closeModal();
+      renderAIProviders();
+      // Test AI connection via background to update header status
+      window.checkAiStatus();
+    } else {
+      toast(r.message, 'error');
+    }
+  } catch(e) { toast(e.message, 'error'); }
+  finally { btn.textContent = 'บันทึก'; btn.disabled = false; }
+};
+
+window.doDeleteProvider = async (id, name) => {
+  if (!confirm(`แน่ใจหรือไม่ที่จะลบ Provider: ${name}?`)) return;
+  try {
+    const r = await apiPost('deleteAIProvider', { providerId: id });
+    if (r.success) { toast(r.message, 'success'); renderAIProviders(); }
+    else toast(r.message, 'error');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+window.doTestProvider = async (id, btn) => {
+  const oldText = btn.textContent;
+  btn.textContent = '⏳...'; btn.disabled = true;
+  try {
+    const r = await apiPost('testAIProvider', { providerId: id });
+    if (r.success) { toast(r.message, 'success'); }
+    else { toast(r.message, 'error'); }
+  } catch(e) { toast(e.message, 'error'); }
+  finally { btn.textContent = oldText; btn.disabled = false; }
+};
+
+
 function renderSettingItem(item) {
+  // Hide obsolete AI fields that were migrated to AI Providers
+  const obsoleteKeys = ['ai_provider', 'ai_api_key', 'ai_base_url', 'ai_model'];
+  if (obsoleteKeys.includes(item.key)) return '';
+
   const inputId = `setting-${item.key}`;
   let control = '';
 
