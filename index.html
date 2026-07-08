@@ -806,7 +806,7 @@ tr:hover td{background:var(--surface2)}
 const API_URL = 'https://script.google.com/macros/s/AKfycby8pKO62jb04_nO5ZTXT3CCBSBdZyk4i2kG0l5PQhT7NNejdWp4CJ43QoKHYfO0ifKQ/exec';
 
 function applyTheme(theme) {
-  const t = theme || 'pure-mono';
+  const t = theme || 'sand-stone';
   document.documentElement.setAttribute('data-theme', t);
   localStorage.setItem('fitmate_theme', t);
 }
@@ -919,12 +919,12 @@ async function apiPost(action, params={}) { return api(action, params, 'POST'); 
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   // Apply saved theme from localStorage first (before login check)
-  const savedTheme = localStorage.getItem('fitmate_theme') || 'pure-mono';
+  const savedTheme = localStorage.getItem('fitmate_theme') || 'sand-stone';
   applyTheme(savedTheme);
 
   if (state.token && state.user) {
     // Prefer localStorage theme, then user.theme from DB
-    const theme = localStorage.getItem('fitmate_theme') || state.user.theme || 'pure-mono';
+    const theme = localStorage.getItem('fitmate_theme') || state.user.theme || 'sand-stone';
     applyTheme(theme);
     showApp();
   } else {
@@ -944,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 // THEME — defined earlier near line 818
 // ============================================================
-// applyTheme() is already defined above; default theme = 'pure-mono'
+// applyTheme() is already defined above; default theme = 'sand-stone'
 
 // ============================================================
 // NAVIGATION
@@ -1072,7 +1072,7 @@ function showApp() {
   document.getElementById('auth-page').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   // Use theme from localStorage (set by login page picker), fallback to user.theme from DB
-  const theme = localStorage.getItem('fitmate_theme') || state.user?.theme || 'pure-mono';
+  const theme = localStorage.getItem('fitmate_theme') || state.user?.theme || 'sand-stone';
   applyTheme(theme);
   renderNav();
   loadNotificationCount();
