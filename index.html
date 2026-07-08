@@ -1402,23 +1402,52 @@ function _renderRadarChart(bf) {
   if (!ctx) return;
   const labels = Object.keys(bf);
   const data   = Object.values(bf);
-  const max    = Math.max(...data, 1);
+  // Vivid multi-color palette per axis
+  const colors = ['#ff6b6b','#ffd166','#06d6a0','#4dd9e8','#a78bfa','#f97316','#ec4899','#84cc16'];
+  const aColors = colors.map(c => c + '33'); // 20% alpha fills per axis
+
   state.charts.radar = new Chart(ctx, {
     type:'radar',
-    data:{ labels,
-      datasets:[{ label:'ความถี่ที่ฝึก', data,
-        backgroundColor:`rgba(var(--accent-rgb),.2)`,
-        borderColor:`rgba(var(--accent-rgb),1)`,
-        pointBackgroundColor:`rgba(var(--accent-rgb),1)`,
-        borderWidth:2, pointRadius:4
+    data:{
+      labels,
+      datasets:[{
+        label:'ความถี่ที่ฝึก',
+        data,
+        backgroundColor: 'rgba(181,154,120,0.18)',
+        borderColor: '#b59a78',
+        pointBackgroundColor: colors.slice(0, labels.length),
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        borderWidth: 2.5,
+        fill: true,
       }]
     },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display:false } },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation: { duration: 800, easing: 'easeInOutQuart' },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:'rgba(0,0,0,0.75)',
+          titleColor:'#fff',
+          bodyColor:'#ccc',
+          padding:10,
+          cornerRadius:8,
+        }
+      },
       scales:{ r:{
-        ticks:{ display:false },
-        grid:{ color:'rgba(255,255,255,0.06)' },
-        pointLabels:{ color:'var(--text2)', font:{ size:11 } },
+        min: 0,
+        ticks:{ display:false, stepSize:1 },
+        grid:{ color:'rgba(128,128,128,0.15)', lineWidth:1 },
+        angleLines:{ color:'rgba(128,128,128,0.2)' },
+        pointLabels:{
+          color:'var(--text)',
+          font:{ size:12, weight:'600' },
+          padding: 8,
+        },
       }}
     }
   });
@@ -1522,39 +1551,86 @@ function _renderSilhouette(bf) {
   const el = document.getElementById('silhouette-wrap');
   if (!el) return;
   const max = Math.max(...Object.values(bf), 1);
-  const opacity = (key) => Math.min(0.9, (bf[key]||0) / max * 0.9 + 0.1);
-  const acc = `rgba(var(--accent-rgb),`;
+  // Heat-map colors: cool blue → warm amber → hot red
+  const zoneColor = (key) => {
+    const p = Math.min(1, (bf[key]||0) / max);
+    if (p === 0) return 'rgba(160,150,140,0.15)';
+    const r = Math.round(64  + p * 191);
+    const g = Math.round(181 - p * 130);
+    const b = Math.round(246 - p * 164);
+    return `rgba(${r},${g},${b},${(0.35 + p * 0.55).toFixed(2)})`;
+  };
+  const textColor = (key) => {
+    const p = Math.min(1, (bf[key]||0) / max);
+    return p > 0.5 ? '#fff' : 'var(--text)';
+  };
+  const topMuscles = Object.entries(bf).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
   el.innerHTML = `
-    <div class="silhouette-wrap">
-      <svg viewBox="0 0 120 220" style="max-height:220px;width:100%">
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center;padding:8px 0">
+      <svg viewBox="0 0 120 220" style="max-height:230px;width:110px;flex-shrink:0" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sg-head" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#c8bfb0"/>
+            <stop offset="100%" stop-color="#9a8878"/>
+          </radialGradient>
+          <filter id="sg-glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
         <!-- Head -->
-        <circle cx="60" cy="22" r="18" fill="var(--surface3)" stroke="var(--border2)" stroke-width="1"/>
+        <circle cx="60" cy="22" r="17" fill="url(#sg-head)" opacity="0.75"/>
         <!-- Neck -->
-        <rect x="55" y="38" width="10" height="12" rx="4" fill="var(--surface3)"/>
-        <!-- Chest (หน้าอก) -->
-        <ellipse cx="60" cy="70" rx="28" ry="20" fill="${acc}${opacity('หน้าอก')})" />
-        <text x="60" y="73" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">หน้าอก</text>
-        <!-- Back (shown as side highlight) -->
+        <rect x="55" y="37" width="10" height="10" rx="4" fill="#9a8878" opacity="0.6"/>
         <!-- Shoulders (ไหล่) -->
-        <ellipse cx="30" cy="62" rx="14" ry="10" fill="${acc}${opacity('ไหล่')})" />
-        <ellipse cx="90" cy="62" rx="14" ry="10" fill="${acc}${opacity('ไหล่')})" />
-        <!-- Arms -->
-        <rect x="15" y="68" width="14" height="40" rx="7" fill="${acc}${opacity('แขน')})" />
-        <rect x="91" y="68" width="14" height="40" rx="7" fill="${acc}${opacity('แขน')})" />
+        <ellipse cx="30" cy="60" rx="15" ry="11" fill="${zoneColor('ไหล่')}" filter="url(#sg-glow)"/>
+        <ellipse cx="90" cy="60" rx="15" ry="11" fill="${zoneColor('ไหล่')}" filter="url(#sg-glow)"/>
+        <!-- Chest (หน้าอก) -->
+        <ellipse cx="60" cy="67" rx="26" ry="18" fill="${zoneColor('หน้าอก')}" filter="url(#sg-glow)"/>
+        <text x="60" y="71" text-anchor="middle" fill="${textColor('หน้าอก')}" font-size="7.5" font-weight="700">หน้าอก</text>
+        <!-- Arms (แขน) -->
+        <rect x="14" y="66" width="13" height="43" rx="6" fill="${zoneColor('แขน')}" filter="url(#sg-glow)"/>
+        <rect x="93" y="66" width="13" height="43" rx="6" fill="${zoneColor('แขน')}" filter="url(#sg-glow)"/>
         <!-- Abs (ท้อง) -->
-        <ellipse cx="60" cy="100" rx="22" ry="20" fill="${acc}${opacity('ท้อง')})" />
-        <text x="60" y="103" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">ท้อง</text>
+        <ellipse cx="60" cy="97" rx="21" ry="18" fill="${zoneColor('ท้อง')}" filter="url(#sg-glow)"/>
+        <text x="60" y="101" text-anchor="middle" fill="${textColor('ท้อง')}" font-size="7.5" font-weight="700">ท้อง</text>
         <!-- Hips (สะโพก) -->
-        <ellipse cx="60" cy="128" rx="26" ry="14" fill="${acc}${opacity('สะโพก')})" />
-        <text x="60" y="131" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">สะโพก</text>
+        <ellipse cx="60" cy="124" rx="25" ry="13" fill="${zoneColor('สะโพก')}" filter="url(#sg-glow)"/>
+        <text x="60" y="128" text-anchor="middle" fill="${textColor('สะโพก')}" font-size="7.5" font-weight="700">สะโพก</text>
         <!-- Legs (ขา) -->
-        <rect x="38" y="140" width="18" height="55" rx="9" fill="${acc}${opacity('ขา')})" />
-        <rect x="64" y="140" width="18" height="55" rx="9" fill="${acc}${opacity('ขา')})" />
-        <text x="60" y="168" text-anchor="middle" fill="var(--text)" font-size="8" font-weight="600">ขา</text>
+        <rect x="37" y="136" width="19" height="57" rx="9" fill="${zoneColor('ขา')}" filter="url(#sg-glow)"/>
+        <rect x="64" y="136" width="19" height="57" rx="9" fill="${zoneColor('ขา')}" filter="url(#sg-glow)"/>
+        <text x="60" y="165" text-anchor="middle" fill="${textColor('ขา')}" font-size="7.5" font-weight="700">ขา</text>
         <!-- Feet -->
-        <ellipse cx="47" cy="197" rx="12" ry="7" fill="var(--surface3)"/>
-        <ellipse cx="73" cy="197" rx="12" ry="7" fill="var(--surface3)"/>
+        <ellipse cx="47" cy="196" rx="13" ry="7" fill="#9a8878" opacity="0.45"/>
+        <ellipse cx="73" cy="196" rx="13" ry="7" fill="#9a8878" opacity="0.45"/>
+        <!-- Back (หลัง) overlay lines -->
+        <line x1="48" y1="50" x2="48" y2="115" stroke="${zoneColor('หลัง')}" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+        <line x1="72" y1="50" x2="72" y2="115" stroke="${zoneColor('หลัง')}" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
       </svg>
+
+      <!-- Legend bar chart -->
+      <div style="flex:1;min-width:130px;padding-top:4px">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.6px">ความถี่ต่อโซน</div>
+        ${Object.entries(bf).sort((a,b)=>b[1]-a[1]).map(([key, val]) => {
+          const p = Math.min(1, val / max);
+          const barW = Math.round(p * 100);
+          const r2 = Math.round(64+p*191), g2 = Math.round(181-p*130), b2 = Math.round(246-p*164);
+          const col = `rgb(${r2},${g2},${b2})`;
+          return `
+          <div style="margin-bottom:9px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+              <span style="font-size:12px;font-weight:600;color:var(--text)">${key}</span>
+              <span style="font-size:11px;color:var(--text2);background:var(--surface2);padding:1px 7px;border-radius:10px">${val}×</span>
+            </div>
+            <div style="height:7px;border-radius:4px;background:var(--surface2);overflow:hidden">
+              <div style="height:100%;width:${barW}%;background:${col};border-radius:4px;transition:width 0.9s cubic-bezier(.4,0,.2,1)"></div>
+            </div>
+          </div>`;
+        }).join('')}
+        ${topMuscles.length ? `
+        <div style="margin-top:14px;padding:9px 12px;background:linear-gradient(135deg,rgba(181,154,120,0.12),rgba(181,154,120,0.04));border:1px solid rgba(181,154,120,0.2);border-radius:10px;font-size:11.5px;color:var(--text2);text-align:center;font-weight:500">
+          🔥 โฟกัสหลัก: ${topMuscles.map(([k])=>`<strong>${k}</strong>`).join(' · ')}
+        </div>` : ''}
+      </div>
     </div>`;
 }
 
