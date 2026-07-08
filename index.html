@@ -854,14 +854,19 @@ window._aiStatusCache = '<span style="font-size:10px;padding:2px 6px;border-radi
 
 window.checkAiStatus = async () => {
   try {
-    const r = await apiPost('testAiConnection');
+    // Use direct fetch with no token — testAiConnection is now a public endpoint
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'testAiConnection' })
+    });
+    const r = await res.json();
     if (r.success) {
       window._aiStatusCache = '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(0,230,118,0.1);color:#00e676">● Online</span>';
     } else {
-      window._aiStatusCache = `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,51,102,0.1);color:#ff3366" title="${r.message}">● Error</span>`;
+      window._aiStatusCache = `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,51,102,0.1);color:#ff3366" title="${r.message}">● Offline</span>`;
     }
   } catch(e) {
-    window._aiStatusCache = `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,51,102,0.1);color:#ff3366" title="${e.message}">● Error</span>`;
+    window._aiStatusCache = `<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,165,0,0.12);color:#ff9800" title="${e.message}">● ไม่มีสัญญาณ</span>`;
   }
   const el = document.getElementById('ai-status-indicator-wrapper');
   if (el) el.innerHTML = window._aiStatusCache;
@@ -971,7 +976,12 @@ function getNavItems() {
 }
 
 function renderNav() {
-  if (!window._aiStatusChecked) { window._aiStatusChecked = true; setTimeout(()=>checkAiStatus(), 1000); }
+  // Start AI status polling once — check immediately then every 2 minutes
+  if (!window._aiStatusInterval) {
+    window._aiStatusInterval = true;
+    checkAiStatus(); // first check right now
+    setInterval(() => checkAiStatus(), 2 * 60 * 1000); // repeat every 2 min
+  }
   const items   = getNavItems();
   const isAdmin = state.user?.role === 'admin';
   const sideNav = document.getElementById('sidebar-nav');
