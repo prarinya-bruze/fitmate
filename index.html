@@ -1731,44 +1731,33 @@ async function renderToday(el) {
         </div>
       </div>
 
-      <!-- Photo upload & submit -->
+      <!-- Photo upload per exercise -->
       <div class="card" style="margin-top:20px">
         <div class="card-header"><div class="card-title"><span class="card-title-icon">📸</span>ส่งรายงานผล</div></div>
-        <div style="margin-bottom:16px">
-          <div id="activity-progress" style="height:8px;background:var(--surface3);border-radius:4px;margin-bottom:8px;overflow:hidden">
-            <div id="activity-progress-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .3s;width:0%"></div>
-          </div>
-          <div style="font-size:12px;color:var(--text2)" id="activity-progress-text">เลือกรูปหรือส่งผลทันที</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:14px">แนบรูปได้ทุกท่า (ไม่บังคับ) — AI จะวิเคราะห์รวมทีเดียว</div>
+        <div id="exercise-photo-list">
+          ${(today?.exercises||[]).map((ex, idx) => `
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px;background:var(--surface2);border-radius:var(--radius-sm)">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ex.name}</div>
+              <div style="font-size:11px;color:var(--text3)">${ex.sets} เซ็ต × ${ex.repsDuration}</div>
+            </div>
+            <input type="file" id="photo-cam-${idx}" accept="image/*" capture="environment" style="display:none" onchange="attachExercisePhoto(${idx}, '${ex.name}', this)"/>
+            <input type="file" id="photo-gal-${idx}" accept="image/*" style="display:none" onchange="attachExercisePhoto(${idx}, '${ex.name}', this)"/>
+            <button type="button" onclick="document.getElementById('photo-cam-${idx}').click()" style="padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);cursor:pointer;font-size:18px" title="ถ่ายภาพ">📷</button>
+            <button type="button" onclick="document.getElementById('photo-gal-${idx}').click()" style="padding:6px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface);cursor:pointer;font-size:18px" title="เลือกจากคลัง">🖼️</button>
+            <span id="photo-badge-${idx}" style="font-size:11px;color:var(--text3)">—</span>
+          </div>`).join('')}
         </div>
-        <!-- Hidden inputs -->
-        <input type="file" id="activity-img-camera" accept="image/*" capture="environment" style="display:none" onchange="handleActivityImage(this,'${today?.planDayId}')"/>
-        <input type="file" id="activity-img-gallery" accept="image/*" style="display:none" onchange="handleActivityImage(this,'${today?.planDayId}')"/>
-        <!-- Two buttons side by side -->
-        <div style="display:flex;gap:10px;margin-top:4px">
-          <button type="button" onclick="document.getElementById('activity-img-camera').click()"
-            style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px;border:2px dashed var(--border2);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:0.2s;color:var(--text)"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
-            <span style="font-size:28px">📷</span>
-            <span style="font-size:13px;font-weight:600">ถ่ายภาพ</span>
-            <span style="font-size:11px;color:var(--text3)">เปิดกล้องทันที</span>
-          </button>
-          <button type="button" onclick="document.getElementById('activity-img-gallery').click()"
-            style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px;border:2px dashed var(--border2);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:0.2s;color:var(--text)"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
-            <span style="font-size:28px">🖼️</span>
-            <span style="font-size:13px;font-weight:600">เลือกจากคลัง</span>
-            <span style="font-size:11px;color:var(--text3)">ไฟล์ในเครื่อง</span>
-          </button>
-        </div>
-        <div id="activity-ai-result" style="display:none"></div>
+        <div id="activity-ai-result" style="display:none;margin-top:12px"></div>
         <div class="form-group" style="margin-top:16px">
           <label class="form-label">โน้ตส่วนตัว (ไม่บังคับ)</label>
           <textarea id="activity-note" class="form-control" rows="2" placeholder="เช่น รู้สึกดีมาก, เพิ่มน้ำหนักได้แล้ว..."></textarea>
         </div>
-        <div style="display:flex;gap:10px;margin-top:8px">
-          <button class="btn btn-primary" style="flex:1" onclick="submitActivity('${today?.planDayId}','done')">✅ ทำครบแล้ว!</button>
-          <button class="btn btn-secondary" onclick="submitActivity('${today?.planDayId}','partial')">⚡ ทำบางส่วน</button>
-          <button class="btn btn-danger btn-sm" onclick="submitActivity('${today?.planDayId}','missed')">❌</button>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-primary" style="flex:1" onclick="submitActivity('${today?.planDayId}','done',this)">✅ ทำครบแล้ว!</button>
+          <button class="btn btn-secondary" onclick="submitActivity('${today?.planDayId}','partial',this)">⚡ ทำบางส่วน</button>
+          <button class="btn btn-danger btn-sm" onclick="submitActivity('${today?.planDayId}','missed',this)">❌</button>
         </div>
       </div>
     `}
@@ -1831,37 +1820,59 @@ async function renderToday(el) {
   };
 }
 
-window.handleActivityImage = async (input, planDayId) => {
+window._exercisePhotos = {}; // { idx: { name, b64 } }
+
+window.attachExercisePhoto = (idx, name, input) => {
   const file = input.files[0];
   if (!file) return;
-  const resultEl = document.getElementById('activity-ai-result');
-  resultEl.style.display = 'block';
-  resultEl.innerHTML = `<div class="loader"><div class="spinner"></div>AI กำลังวิเคราะห์รูป...</div>`;
-
+  const badge = document.getElementById('photo-badge-' + idx);
+  if (badge) { badge.textContent = '⏳ โหลด...'; badge.style.color = 'var(--text2)'; }
   const reader = new FileReader();
-  reader.onload = async (e) => {
-    const b64 = e.target.result.split(',')[1];
-    try {
-      const r = await apiPost('analyzeActivityImage', { base64Image: b64, planDayId });
-      const d = r.data || {};
-      resultEl.innerHTML = `
-        <div class="ai-result">
-          <div class="ai-result-header">🤖 AI วิเคราะห์</div>
-          <p style="font-size:14px;margin-bottom:8px">${d.analysis || ''}</p>
-          ${d.formTips ? `<p style="font-size:13px;color:var(--text2)">💡 ${d.formTips}</p>` : ''}
-          ${d.motivationMessage ? `<p style="font-size:14px;font-weight:600;color:var(--accent);margin-top:8px">💪 ${d.motivationMessage}</p>` : ''}
-          ${d.status ? `<span class="badge badge-${d.status==='done'?'success':d.status==='partial'?'warning':'danger'}" style="margin-top:8px">${{done:'✅ ทำสำเร็จ',partial:'⚡ บางส่วน',missed:'❌ พลาด'}[d.status]||d.status}</span>` : ''}
-        </div>`;
-    } catch(err) {
-      resultEl.innerHTML = `<div class="form-error">วิเคราะห์ไม่สำเร็จ: ${err.message}</div>`;
-    }
+  reader.onload = (e) => {
+    window._exercisePhotos[idx] = { name, b64: e.target.result.split(',')[1] };
+    const count = Object.keys(window._exercisePhotos).length;
+    if (badge) { badge.textContent = '✅ แนบแล้ว'; badge.style.color = '#00e676'; }
+    toast(`✅ แนบรูป ${name} แล้ว (${count} ภาพ)`, 'success');
   };
   reader.readAsDataURL(file);
 };
 
-window.submitActivity = async (planDayId, status) => {
+window.submitActivity = async (planDayId, status, btn) => {
   const note = document.getElementById('activity-note')?.value || '';
-  await _submitActivityLog(planDayId, status, [...(window._checked||[])], note);
+  const photos = Object.values(window._exercisePhotos || {});
+  const resultEl = document.getElementById('activity-ai-result');
+
+  // Disable button immediately to prevent double submit
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ กำลังอัปโหลด...'; }
+
+  // If photos attached, do batch AI analysis before submitting
+  if (photos.length > 0 && resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `<div class="loader"><div class="spinner"></div>🤖 AI กำลังวิเคราะห์ ${photos.length} ภาพ...</div>`;
+    try {
+      // Analyse all photos in parallel
+      const results = await Promise.all(photos.map(p =>
+        apiPost('analyzeActivityImage', { base64Image: p.b64, planDayId })
+          .then(r => ({ name: p.name, data: r.data || {} }))
+          .catch(e => ({ name: p.name, error: e.message }))
+      ));
+      const summaryHtml = results.map(res => {
+        if (res.error) return `<div style="margin-bottom:8px"><strong>${res.name}</strong>: <span style="color:var(--danger)">${res.error}</span></div>`;
+        const d = res.data;
+        return `
+        <div style="margin-bottom:12px;padding:10px;background:var(--surface2);border-radius:8px">
+          <div style="font-weight:700;margin-bottom:4px">${res.name} ${d.status ? {done:'✅',partial:'⚡',missed:'❌'}[d.status]||'' : ''}</div>
+          ${d.analysis ? `<p style="font-size:13px;margin:0 0 4px">${d.analysis}</p>` : ''}
+          ${d.formTips ? `<p style="font-size:12px;color:var(--text2);margin:0">💡 ${d.formTips}</p>` : ''}
+        </div>`;
+      }).join('');
+      resultEl.innerHTML = `<div class="ai-result"><div class="ai-result-header">🤖 ผลวิเคราะห์ AI (${photos.length} ท่า)</div>${summaryHtml}</div>`;
+    } catch(e) {
+      resultEl.innerHTML = `<div class="form-error">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;
+    }
+  }
+
+  await _submitActivityLog(planDayId, status, [...checked], note);
 };
 
 async function _submitActivityLog(planDayId, status, exercises, note) {
@@ -1870,8 +1881,9 @@ async function _submitActivityLog(planDayId, status, exercises, note) {
       planDayId, resultJson: { status, exercisesCompleted: exercises, note, analysis: note }
     });
     if (r.success) {
-      toast(r.message || 'บันทึกเรียบร้อย', 'success');
-      await renderToday(document.getElementById('page-content'));
+      toast(r.message || 'บันทึกเรียบร้อย ✅', 'success');
+      window._exercisePhotos = {}; // clear photos
+      navigate('dashboard'); // ⬅️ กลับไป Dashboard ทันที
     } else { toast(r.message, 'error'); }
   } catch(e) { toast(e.message, 'error'); }
 }
