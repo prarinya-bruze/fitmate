@@ -1740,12 +1740,26 @@ async function renderToday(el) {
           </div>
           <div style="font-size:12px;color:var(--text2)" id="activity-progress-text">เลือกรูปหรือส่งผลทันที</div>
         </div>
-        <div class="upload-zone" id="activity-drop" style="padding:24px" onclick="document.getElementById('activity-img').click()">
-          <span class="upload-icon" style="font-size:32px">📷</span>
-          <div class="upload-title" style="font-size:15px">ถ่ายรูปหรือเลือกรูปกิจกรรม</div>
-          <div class="upload-sub" style="font-size:12px">AI จะวิเคราะห์ท่าทางให้อัตโนมัติ</div>
+        <!-- Hidden inputs -->
+        <input type="file" id="activity-img-camera" accept="image/*" capture="environment" style="display:none" onchange="handleActivityImage(this,'${today?.planDayId}')"/>
+        <input type="file" id="activity-img-gallery" accept="image/*" style="display:none" onchange="handleActivityImage(this,'${today?.planDayId}')"/>
+        <!-- Two buttons side by side -->
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button type="button" onclick="document.getElementById('activity-img-camera').click()"
+            style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px;border:2px dashed var(--border2);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:0.2s;color:var(--text)"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+            <span style="font-size:28px">📷</span>
+            <span style="font-size:13px;font-weight:600">ถ่ายภาพ</span>
+            <span style="font-size:11px;color:var(--text3)">เปิดกล้องทันที</span>
+          </button>
+          <button type="button" onclick="document.getElementById('activity-img-gallery').click()"
+            style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 8px;border:2px dashed var(--border2);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:0.2s;color:var(--text)"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+            <span style="font-size:28px">🖼️</span>
+            <span style="font-size:13px;font-weight:600">เลือกจากคลัง</span>
+            <span style="font-size:11px;color:var(--text3)">ไฟล์ในเครื่อง</span>
+          </button>
         </div>
-        <input type="file" id="activity-img" accept="image/*" capture="environment" style="display:none" onchange="handleActivityImage(this,'${today?.planDayId}')"/>
         <div id="activity-ai-result" style="display:none"></div>
         <div class="form-group" style="margin-top:16px">
           <label class="form-label">โน้ตส่วนตัว (ไม่บังคับ)</label>
@@ -1872,14 +1886,32 @@ function renderUpload(el) {
       <div class="section-subtitle">ถ่ายรูปตารางออกกำลังกาย แล้ว AI จะแปลงเป็นแผนรายวันให้อัตโนมัติ</div></div>
     </div>
     <div class="card">
-      <div class="upload-zone" id="plan-drop" onclick="document.getElementById('plan-img').click()"
+      <!-- Hidden inputs -->
+      <input type="file" id="plan-img-camera" accept="image/*" capture="environment" style="display:none" onchange="handlePlanImage(this)"/>
+      <input type="file" id="plan-img" accept="image/*" style="display:none" onchange="handlePlanImage(this)"/>
+      <!-- Two buttons + drag-drop area -->
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <button type="button" onclick="document.getElementById('plan-img-camera').click()"
+          style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 8px;border:2px dashed var(--border2);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:0.2s;color:var(--text)"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:36px">📷</span>
+          <span style="font-size:14px;font-weight:700">ถ่ายภาพ</span>
+          <span style="font-size:12px;color:var(--text3)">เปิดกล้องทันที</span>
+        </button>
+        <button type="button" onclick="document.getElementById('plan-img').click()"
+          style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 8px;border:2px dashed var(--border2);border-radius:var(--radius);background:var(--surface);cursor:pointer;transition:0.2s;color:var(--text)"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <span style="font-size:36px">🖼️</span>
+          <span style="font-size:14px;font-weight:700">เลือกจากคลัง</span>
+          <span style="font-size:12px;color:var(--text3)">ไฟล์ในเครื่อง</span>
+        </button>
+      </div>
+      <!-- Drag-drop fallback for desktop -->
+      <div class="upload-zone" id="plan-drop" style="padding:14px"
         ondragover="event.preventDefault();this.classList.add('dragover')"
         ondragleave="this.classList.remove('dragover')"
         ondrop="handlePlanDrop(event)">
-        <span class="upload-icon">📄</span>
-        <div class="upload-title">ลากวางรูปหรือคลิกเพื่อเลือก</div>
-        <div class="upload-sub">รองรับ JPG, PNG, WebP — รูปตารางออกกำลังกายทุกแบบ</div>
-        <input type="file" id="plan-img" accept="image/*" style="display:none" onchange="handlePlanImage(this)"/>
+        <span style="font-size:14px;color:var(--text3)">🖥️ หรือลากวางไฟล์รูปที่นี่ (JPG, PNG, WebP)</span>
       </div>
 
       <div id="plan-preview" style="display:none;margin-top:16px;text-align:center">
